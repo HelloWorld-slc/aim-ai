@@ -1,0 +1,44 @@
+name: 问题反馈
+description: 报告可以复现的错误、兼容问题或资料错误
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: 请勿粘贴 API Key、Wi-Fi 密码或学生个人信息。请区分模拟结果与真实设备结果。
+  - type: textarea
+    id: environment
+    attributes:
+      label: 使用环境
+      description: AIM AI、VS Code、Windows/Python 版本；涉及实机时补充固件与连接方式。
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤与实际结果
+      placeholder: "1. 打开……\n2. 点击……\n3. 出现……"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望结果
+    validations:
+      required: true
+  - type: dropdown
+    id: validation
+    attributes:
+      label: 问题涉及的环境
+      options:
+        - 仅编辑器 / 项目 / 资料
+        - 模拟机器人
+        - 真实机器人
+        - 真实模型 API
+        - 多项（请在描述中说明）
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 错误提示、最小示例或截图
+      description: 请先去除密钥、网络密码和个人信息。

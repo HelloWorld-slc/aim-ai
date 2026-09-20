@@ -12,3 +12,8 @@ esbuild.mjs
 package-lock.json
 dist/*.map
 media/main.js
+.robot-runtime/**
+.github/**
+**/__pycache__/**
+**/*.pyc
+scripts/**

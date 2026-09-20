@@ -13,6 +13,9 @@ exports.run = async function () {
   let referenceReply;
   let referenceIndex;
   let streamMode = '';
+  let robotMode = '';
+  let robotCalls = 0;
+  let robotReply = '';
   try {
     const ext = vscode.extensions.getExtension('aim-ai-local.aim-ai');
     assert.ok(ext, 'development extension registered');
@@ -44,6 +47,7 @@ exports.run = async function () {
     assert.equal(await api.assistant.check(), true); report('syntax checker in extension host');
 
     const config = vscode.workspace.getConfiguration('aimAI');
+    await config.update('robotAutoConnect', false, vscode.ConfigurationTarget.Global);
     await config.update('provider', 'custom', vscode.ConfigurationTarget.Global);
     await config.update('protocol', 'chat-completions', vscode.ConfigurationTarget.Global);
     await api.assistant.setThinking('high');
@@ -55,6 +59,18 @@ exports.run = async function () {
       assert.equal(input.reasoning_effort, 'high');
       if (input.messages[0].content.includes('connection test')) {
         res.end(JSON.stringify({ choices: [{ message: { content: 'OK' } }] })); return;
+      }
+      if (robotMode) {
+        robotCalls++;
+        if (robotMode === 'ordinary') { res.end(JSON.stringify({ choices: [{ message: { content: '普通代码解释，不读取机器人。' } }] })); return; }
+        if (robotMode === 'proposal') {
+          res.end(JSON.stringify({ choices: [{ message: { content: null, tool_calls: [{ id: 'robot-plan', type: 'function', function: { name: 'propose_robot_test', arguments: JSON.stringify({ kind: 'move', amount: 50, speed: 20, explanation: '测试一次短距离直行。' }) } }] } }] })); return;
+        }
+        if (input.messages.at(-1).role === 'tool' && robotMode !== 'flood') {
+          robotReply = input.messages.at(-1).content;
+          res.end(JSON.stringify({ choices: [{ message: { content: '已收到模拟状态，未验证实机。' } }] })); return;
+        }
+        res.end(JSON.stringify({ choices: [{ message: { content: null, tool_calls: [{ id: `robot-${robotCalls}`, type: 'function', function: { name: 'read_robot_snapshot', arguments: JSON.stringify({ include_vision: true }) } }] } }] })); return;
       }
       if (streamMode) {
         assert.equal(input.stream, true);
@@ -171,7 +187,40 @@ exports.run = async function () {
     assert.ok(resumed.messages.length > firstChat.messages.length);
     assert.equal(doc.getText(), beforeReference);
     report('new chat preserves old conversation and reopening permits continuation');
-    await fs.writeFile(path.join(extensionRoot, '.vscode-test', 'restart-expected.json'), JSON.stringify({ id: resumed.id, count: resumed.messages.length }));
+    // Install into this test host's isolated storage, then test AI automatic connection.
+    await api.robot.disconnect();
+    await api.robot.install();
+    assert.equal(api.robot.state().installed, true); report('one-click robot dependency installer in isolated VS Code storage');
+    await api.robot.saveConnection('', true);
+    await config.update('robotAutoConnect', true, vscode.ConfigurationTarget.Global);
+    robotMode = 'ordinary'; robotCalls = 0;
+    await api.assistant.send('解释当前程序，不需要机器人状态');
+    assert.equal(api.robot.state().connected, false); report('automatic connection waits for an actual robot tool call');
+    robotMode = 'snapshot';
+    await api.assistant.send('读取机器人状态并解释');
+    assert.equal(api.robot.state().connected, true); assert.match(robotReply, /simulation/); assert.match(robotReply, /不证明当前学生程序/); report('AI connects without an approval dialog on first read and preserves simulation provenance');
+    robotMode = 'proposal';
+    await api.assistant.send('提出一个50毫米测试');
+    assert.ok(api.robot.state().proposal); assert.equal(api.robot.state().snapshot.positionMm.y, 0); report('AI test proposal cannot directly cause movement');
+    await api.robot.executeProposal(api.robot.state().proposal.id);
+    assert.equal(api.robot.state().report.measured.positionDeltaMm, 50); assert.match(api.robot.analysisPrompt(), /模拟数据/); report('explicit proposal execution creates bounded summary for later AI analysis');
+    robotMode = 'flood'; robotCalls = 0;
+    const originalRead = api.robot.read.bind(api.robot); let reads = 0;
+    api.robot.read = async (...args) => { reads++; return originalRead(...args); };
+    await api.assistant.send('重复读取机器人状态');
+    assert.equal(robotCalls, 3); assert.equal(reads, 2); assert.equal(api.robot.state().report, undefined); assert.equal(api.robot.state().snapshot.positionMm.y, 50); report('robot assist limits model rounds and actual state reads; latest snapshot replaces old report');
+    api.robot.read = originalRead;
+    await api.robot.disconnect();
+    const originalConnect = api.robot.ensureForAI.bind(api.robot); let attempts = 0;
+    api.robot.ensureForAI = async () => { attempts++; throw new Error('simulated connection failure'); };
+    robotCalls = 0; await api.assistant.send('连接失败时不要无限重试');
+    assert.equal(attempts, 1); assert.equal(robotCalls, 3); report('failed auto connection is attempted only once per task');
+    api.robot.ensureForAI = originalConnect;
+    await config.update('robotAutoConnect', false, vscode.ConfigurationTarget.Global);
+    assert.equal(api.robot.canAutoConnect, false); report('automatic connection switch disables automatic tool access');
+    robotMode = '';
+    const finalChat = api.assistant.conversationState().current;
+    await fs.writeFile(path.join(extensionRoot, '.vscode-test', 'restart-expected.json'), JSON.stringify({ id: finalChat.id, count: finalChat.messages.length }));
     await fs.mkdir(path.join(extensionRoot, 'test-results'), { recursive: true });
     await fs.writeFile(path.join(extensionRoot, 'test-results', 'integration.json'), JSON.stringify({ at: new Date().toISOString(), results, hardware: 'not tested', remoteModel: 'not tested' }, null, 2));
     if (process.env.AIM_AI_VISUAL === '1') {

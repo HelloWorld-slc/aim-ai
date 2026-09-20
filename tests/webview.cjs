@@ -119,8 +119,29 @@ const { PRESETS, thinkingOptions } = require('../src/core/presets.ts');
     await fs.mkdir(path.join(root, 'test-results'), { recursive: true });
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({ path: path.join(root, 'test-results', 'references.png'), fullPage: true });
+    await page.locator('nav [data-tab="robot"]').click();
+    const robot = { installed: true, connected: false, busy: false, mode: 'hardware', host: '192.168.4.1', autoConnect: true, autoConfigured: true };
+    await page.evaluate(data => window.postMessage({ type: 'robotState', data }, '*'), robot);
+    assert.equal(await page.locator('#robot-host').inputValue(), '192.168.4.1');
+    assert.equal(await page.locator('#robot-auto-connect').isChecked(), true);
+    assert.equal(await page.locator('#robot-test').isDisabled(), true);
+    await page.locator('#robot-save').click();
+    assert.ok(await page.evaluate(() => window.sent.some(m => m.type === 'robotSaveConnection' && m.host === '192.168.4.1' && m.simulate === false)));
+    await page.locator('#robot-auto-connect').uncheck();
+    assert.ok(await page.evaluate(() => window.sent.some(m => m.type === 'robotAutoConnect' && m.value === false)));
+    await page.evaluate(data => window.postMessage({ type: 'robotState', data: { ...data, connected: true, mode: 'simulation', snapshot: { mode: 'simulation', batteryPercent: 80, positionMm: { x: 0, y: 50 }, headingDeg: 0, stopped: true }, proposal: { id: 'test-proposal', label: '直行 50 mm · 20% 速度', explanation: '观察实际位移，检查行进方向。' } } }, '*'), robot);
+    assert.match(await page.locator('#robot-result').textContent(), /模拟数据/);
+    assert.equal(await page.locator('#robot-host').isDisabled(), true);
+    await page.locator('#robot-execute-proposal').click();
+    assert.ok(await page.evaluate(() => window.sent.some(m => m.type === 'robotExecuteProposal' && m.id === 'test-proposal')));
+    await page.setViewportSize({ width: 380, height: 1100 });
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.screenshot({ path: path.join(root, 'test-results', 'robot.png'), fullPage: true });
+    await page.evaluate(data => window.postMessage({ type: 'robotState', data: { ...data, connected: true, busy: true } }, '*'), robot);
+    assert.equal(await page.locator('#robot-test').isDisabled(), true);
+    assert.equal(await page.locator('#robot-stop').isDisabled(), false);
     await page.setViewportSize({ width: 240, height: 900 });
-    for (const tab of ['chat', 'history', 'models', 'project', 'docs']) {
+    for (const tab of ['chat', 'history', 'models', 'project', 'docs', 'robot']) {
       await page.locator(`nav [data-tab="${tab}"]`).click();
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), tab + ' 240px layout');
     }
@@ -130,7 +151,7 @@ const { PRESETS, thinkingOptions } = require('../src/core/presets.ts');
     assert.match(await page.locator('.message-status').last().textContent(), /已中断/);
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
     assert.deepEqual(errors, []);
-    await fs.writeFile(path.join(root, 'test-results', 'webview.json'), JSON.stringify({ at: new Date().toISOString(), passed: true, checks: ['Markdown headings/tables/highlight/copy/links', 'script/command/image injection blocked', 'thinking and actual model', 'stream upsert and interrupted status', 'diff counts', 'seven official icons loaded', 'provider configuration', 'thinking selection and busy lock', 'history search/open/rename/delete/new chat', 'per-chat draft restoration', 'export open toggle', '31 entries render', 'Logic expansion', 'Chinese and API search', 'reference click', 'search survives state refresh', 'empty results', 'expansion restored', 'all five tabs at 240px', 'no script errors'] }, null, 2));
+    await fs.writeFile(path.join(root, 'test-results', 'webview.json'), JSON.stringify({ at: new Date().toISOString(), passed: true, checks: ['Markdown headings/tables/highlight/copy/links', 'script/command/image injection blocked', 'thinking and actual model', 'stream upsert and interrupted status', 'diff counts', 'seven official icons loaded', 'provider configuration', 'thinking selection and busy lock', 'history search/open/rename/delete/new chat', 'per-chat draft restoration', 'export open toggle', '31 entries render', 'Logic expansion', 'Chinese and API search', 'reference click', 'search survives state refresh', 'empty results', 'expansion restored', 'robot saved configuration and auto-connect toggle', 'simulated data label and explicit test execution', 'robot busy state and available stop', 'all six tabs at 240px', 'no script errors'] }, null, 2));
     console.log('Webview smoke test passed.');
   } finally {
     if (browser) await browser.close();

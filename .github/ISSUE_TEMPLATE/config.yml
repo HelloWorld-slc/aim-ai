@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: VEX AIM 官方 API
+    url: https://api.vex.com/aim/home/
+    about: 查询机器人端 Python 与电脑端 WebSocket 的官方接口。

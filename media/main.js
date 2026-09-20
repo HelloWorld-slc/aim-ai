@@ -17,6 +17,8 @@ let chats = [];
 let activeChatId;
 let hasConversation = false;
 let currentModel = '';
+let robotState = {};
+let robotInitialized = false;
 const messageNodes = new Map();
 const welcomeTemplate = el('welcome').cloneNode(true);
 const saved = vscode.getState();
@@ -108,7 +110,7 @@ el('prompt').addEventListener('input', saveDraft);
 function send() {
   const prompt = el('prompt').value.trim();
   if (busy || !prompt) return;
-  post('send', { prompt }); el('prompt').value = ''; saveDraft();
+  post('send', { prompt, robotDebug: el('robot-assist').checked }); el('prompt').value = ''; saveDraft();
 }
 function renderMarkdown(target, value) {
   target.innerHTML = DOMPurify.sanitize(markdown.render(value), { ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 's', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'span', 'hr', 'a', 'table', 'thead', 'tbody', 'tr', 'th', 'td'], ALLOWED_ATTR: ['href', 'title', 'class'], ALLOW_DATA_ATTR: false });
@@ -163,10 +165,40 @@ function setBusy(value) {
   document.querySelectorAll('[data-action="clear"], [data-open-chat], [data-rename-chat], [data-delete-chat], [data-provider]').forEach(b => b.disabled = busy);
   el('thinking-effort').disabled = busy;
   el('stream-responses').disabled = busy;
+  el('robot-assist').disabled = busy || !robotState.connected;
+  renderRobot();
+}
+function renderRobot() {
+  const r = robotState;
+  el('robot-install').disabled = !!r.busy || !!r.connected;
+  el('robot-install').textContent = r.installed ? '重新检查 / 安装环境' : '安装调试环境';
+  el('robot-save').disabled = !!r.busy || !!r.connected;
+  el('robot-auto-connect').checked = r.autoConnect !== false;
+  el('robot-auto-connect').disabled = busy;
+  el('robot-connect').disabled = !r.installed || !!r.busy || !!r.connected;
+  el('robot-disconnect').disabled = !r.connected || !!r.busy;
+  el('robot-stop').disabled = !r.connected && !r.busy;
+  el('robot-host').disabled = !!r.busy || !!r.connected;
+  el('robot-mode').disabled = !!r.busy || !!r.connected;
+  if (!el('robot-host').value && r.host) el('robot-host').value = r.host;
+  for (const id of ['robot-snapshot', 'robot-vision', 'robot-test']) el(id).disabled = !r.connected || !!r.busy;
+  el('robot-analyze').disabled = busy || !!r.busy || !(r.snapshot || r.report);
+  el('robot-assist').disabled = busy || !(r.connected || r.autoConfigured);
+  if (!r.connected && !r.autoConfigured) el('robot-assist').checked = false;
+  if ((!robotInitialized || r.connected) && r.mode) { el('robot-mode').value = r.mode; robotInitialized = true; }
+  el('robot-status').textContent = r.busy ? '正在处理…可点击停止 / 取消' : r.connected ? (r.mode === 'simulation' ? '模拟演示已连接 · 未连接实机' : `实机远程调试 · ${r.host}`) : r.installed ? '环境已准备好，尚未连接' : '首次使用需安装本地调试环境';
+  el('robot-error').textContent = r.error || '';
+  const value = r.report || r.snapshot;
+  el('robot-result').textContent = value ? `${value.mode === 'simulation' ? '【模拟数据，不代表实机验证】' : '【实机远程调试结果】'}\n${JSON.stringify(value, null, 2)}` : '读取状态或执行测试后，结果显示在这里。';
+  el('robot-proposal').hidden = !r.proposal;
+  el('robot-proposal-label').textContent = r.proposal?.label || '';
+  el('robot-proposal-explanation').textContent = r.proposal?.explanation || '';
+  el('robot-execute-proposal').disabled = !r.connected || !!r.busy;
 }
 el('stream-responses').addEventListener('change', () => post('streamResponses', { value: el('stream-responses').checked }));
 el('thinking-effort').addEventListener('change', () => post('thinking', { value: el('thinking-effort').value }));
 el('open-after-export').addEventListener('change', () => post('openAfterExport', { value: el('open-after-export').checked }));
+el('robot-auto-connect').addEventListener('change', () => post('robotAutoConnect', { value: el('robot-auto-connect').checked }));
 function setProposal(proposal) { el('proposal').hidden = !proposal; el('proposal-text').textContent = proposal?.explanation || ''; el('diff-added').textContent = proposal?.changes ? `+${proposal.changes.added} 行新增` : ''; el('diff-removed').textContent = proposal?.changes ? `−${proposal.changes.removed} 行删除` : ''; }
 document.addEventListener('click', event => {
   const link = event.target.closest('.markdown-body a[href]');
@@ -174,7 +206,11 @@ document.addEventListener('click', event => {
   const button = event.target.closest('button'); if (!button) return;
   if (button.dataset.tab) {
     showPage(button.dataset.tab);
-  } else if (button.dataset.provider) post('configureProvider', { id: button.dataset.provider });
+  } else if (button.id === 'robot-connect') post('robotConnect', { host: el('robot-host').value, simulate: el('robot-mode').value === 'simulation' });
+  else if (button.id === 'robot-save') post('robotSaveConnection', { host: el('robot-host').value, simulate: el('robot-mode').value === 'simulation' });
+  else if (button.id === 'robot-test') post('robotTest', { plan: { kind: el('robot-test-kind').value, amount: Number(el('robot-amount').value), speed: Number(el('robot-speed').value) } });
+  else if (button.id === 'robot-execute-proposal') post('robotExecuteProposal', { id: robotState.proposal?.id });
+  else if (button.dataset.provider) post('configureProvider', { id: button.dataset.provider });
   else if (button.dataset.providerDocs) post('providerDocs', { id: button.dataset.providerDocs });
   else if (button.dataset.openChat) { post('openChat', { id: button.dataset.openChat }); showPage('chat'); }
   else if (button.dataset.renameChat) post('renameChat', { id: button.dataset.renameChat });
@@ -189,6 +225,7 @@ document.addEventListener('click', event => {
 el('prompt').addEventListener('keydown', event => { if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) { event.preventDefault(); send(); } });
 window.addEventListener('message', event => {
   const { type, data } = event.data;
+  if (type === 'robotState') { robotState = data || {}; renderRobot(); return; }
   if (type === 'state') {
     currentModel = data.model;
     el('stream-responses').checked = data.streamResponses !== false;

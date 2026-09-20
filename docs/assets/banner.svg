@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="title desc">
+  <title id="title">AIM AI</title><desc id="desc">AI-assisted coding for VEX AIM. Describe, review, test.</desc>
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#102a2b"/><stop offset="1" stop-color="#101a24"/></linearGradient><pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#325153" stroke-width=".5"/></pattern></defs>
+  <rect width="1200" height="320" rx="24" fill="url(#bg)"/>
+  <rect width="1200" height="320" rx="24" fill="url(#grid)" opacity=".45"/>
+  <rect x="56" y="57" width="65" height="65" rx="18" fill="none" stroke="#48c9b0" stroke-width="2"/>
+  <text x="88" y="100" text-anchor="middle" fill="#48c9b0" font-size="26" font-weight="700" font-family="Segoe UI,Arial,sans-serif">AI</text>
+  <text x="146" y="106" fill="#f1faf8" font-family="Segoe UI,Arial,sans-serif" font-size="55" font-weight="700" letter-spacing="2">AIM AI</text>
+  <text x="58" y="170" fill="#e0eeeb" font-size="27" font-family="Segoe UI,Arial,sans-serif">AI-assisted coding for VEX AIM</text>
+  <text x="60" y="231" fill="#8bbab1" font-size="17" font-family="Segoe UI,Arial,sans-serif" letter-spacing="3">DESCRIBE   /   REVIEW   /   TEST</text>
+  <g transform="translate(873 70)" fill="none" stroke="#48c9b0"><path d="M0 0H178V178H0Z" stroke-width="2" opacity=".45"/><path d="M0 178V0H100" stroke-width="5" stroke-linecap="round"/><path d="M88 -10L101 0 88 10" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cy="178" r="10" fill="#48c9b0"/><circle cx="178" cy="178" r="6" fill="#102a2b"/><circle cx="178" r="6" fill="#102a2b"/></g>
+  <text x="872" y="282" fill="#8bbab1" font-size="14" font-family="Segoe UI,Arial,sans-serif" letter-spacing="2">ONE IDEA. ONE TEST. ONE STEP.</text>
+</svg>

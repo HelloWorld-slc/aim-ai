@@ -1,115 +1,148 @@
-# AIM AI
+<div align="center">
 
-面向 **VEX AIM** 的 VS Code AI 编程助手，中文界面。适用于《绿茵智控：AI足球机器人挑战项目》等高中课堂。
+<img src="docs/assets/banner.png" alt="AIM AI — AI-assisted coding for VEX AIM" width="900" />
 
-**0.3.0 是本地试用版。** 已完成编辑、参考资料、项目格式和官方应用打开验证。真实模型工具调用、机器人下载与动作仍待现场联调。与 VEX Robotics 无隶属或授权关系。
+**在 VS Code 中，用自然语言编写、检查和调试 VEX AIM Python。**
 
-## 安装与开始
+AI-assisted VEX AIM coding · Built for the classroom
 
-1. VS Code 扩展页面的 `…` → **从 VSIX 安装**，选择 `aim-ai-0.3.0.vsix`。若已由开发者安装，直接打开侧栏的 **AI** 图标。升级后若仍显示旧目录，在命令面板执行 `Developer: Reload Window`。
-2. 用 VS Code **打开文件夹**，选择 AIM 项目根目录，例如 `AIM_Square`，而不是只打开 `src/main.py`。
-3. 在 AIM AI 的“项目”页中选择主程序、检查代码。也可以新建空白或 100 mm 正方形项目，或导入 `.aimpython`。
-4. 在“模型”页选择服务商预设，确认地址、模型并输入密钥；在“编程”页选择思考强度，再点击“测试连接”。
-5. 描述任务 → 等待自动打开右侧差异 → 应用修改 → 检查 → 保存。应用修改前自动保存恢复副本，支持恢复上一版。
-6. 点击“导出 .aimpython”，导出成功后默认自动用 **VEXcode AIM** 打开。项目页可关闭此选项。
+[![CI](https://github.com/HelloWorld-slc/aim-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/HelloWorld-slc/aim-ai/actions/workflows/ci.yml)
+[![Preview](https://img.shields.io/badge/preview-0.4.0-48c9b0)](https://github.com/HelloWorld-slc/aim-ai/releases/tag/v0.4.0)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![VS Code](https://img.shields.io/badge/VS_Code-1.96%2B-007ACC)](https://code.visualstudio.com/)
 
-命令面板中输入 `AIM AI` 也可找到所有入口。
+[下载安装](https://github.com/HelloWorld-slc/aim-ai/releases) · [机器人配网](docs/ROBOT_DEBUG.md) · [测试记录](docs/TESTING.md) · [参与贡献](CONTRIBUTING.md)
 
-### 所需环境
+</div>
 
-- 桌面 VS Code 1.96+，本地可信工作区。目标 Windows 10/11 x64；当前实际验证机器为 Windows 11，Windows 10 尚待独立验证。
-- Python 3：仅执行插件自己的语法分析器，不执行学生的机器人程序。找不到时可设置 `aimAI.pythonPath`。
-- 新建项目需要已安装的 **VEX Robotics 官方扩展**与 AIM Python SDK。可先用官方扩展创建一次 AIM Python 项目完成 SDK 下载。已有项目的 AI 编辑与导出不依赖连接机器人。
-- 下载和运行桥接依赖 VEX 官方扩展 0.8.x，默认关闭且未经实机验证。VEXcode AIM 桌面应用用于项目互通与官方设备操作。
+---
 
-## 模型 API
+AIM AI 把模型对话、官方 API 速查、代码差异、项目导出和机器人调试放进同一个侧栏。学生描述目标，AI 提出代码，学生查看修改并测试；教师可以复用项目模板组织课堂活动。项目起源于《绿茵智控：AI 足球机器人挑战项目》，也适用于正方形行走、视觉识别和运动控制入门。
 
-配置三个字段：服务商提供的 **Base URL、模型 ID、API Key**。提供 DeepSeek、通义千问、Kimi、智谱 GLM、OpenAI、Claude、Gemini 七家预设及官方来源图标；支持 **Chat Completions 兼容接口**和 **Anthropic Messages**，编程模型还必须支持 `tools/function calling`；并非所有 AI 服务都兼容。
+> **当前为 0.4.0 预览版。** 编辑与项目互通已验证；机器人 MCP 流程已通过模拟测试，Wi-Fi 实机、下载与运动效果仍待现场验收。本项目是独立开源工具，与 VEX Robotics 无隶属或授权关系。
 
-- 接口地址通常以 `/v1` 结尾；完整 `/chat/completions` 地址也支持。
-- 默认要求 HTTPS；本机 `localhost/127.0.0.1` 服务允许 HTTP。
-- 密钥通过 VS Code SecretStorage 保存，按接口地址隔离，不放入项目文件、聊天页面或日志。可在项目页删除当前地址的密钥。
-- 发送任务时，会向你配置的服务发送当前主程序（包括未保存修改）、近期对话和相关 AIM 资料；不会遍历上传整盘文件。
-- 测试连接只发送一条固定问候，不含项目源码，但可能产生服务商费用。
-- 每次任务最多 6 轮请求，默认最多 4096 输出 tokens；按任务检索资料，不每次塞入完整教程。没有嵌入模型费用。
-- 默认流式接收并逐步展示；模型页可关闭流式，兼容仅返回 JSON 的接口。不自动重试付费请求。OpenAI 预设使用 `max_completion_tokens`，其他预设按协议适配。仅支持 Responses API 的服务需要另加适配器。基础连接成功不等于工具调用已通过验证。
-- “思考强度”按当前模型提供实际可用档位，选择保存在用户设置。千问的低/中/高对应思考预算，GLM 4.7 和 Kimi K2.6 提供开关；不支持的选项会回到预设默认。自定义服务需自行确认支持 `reasoning_effort`。
-- 单次接口请求最长等待 240 秒，可取消。较高强度可能耗尽输出上限；插件不会擅自提高你设置的上限。模型与参数核对日期：2026-09-20，真实账户可用性仍需测试。
-- 学校可提供兼容接口网关管理额度。不要把教师主密钥写进共享项目；本版没有班级账户与预算管理后台。
+## 能做什么
 
-## 已有功能
-
-| 功能 | 范围 |
+| 能力 | 使用方式 |
 | --- | --- |
-| 对话历史 | 按工作区保存到本机；新对话保留旧记录，支持搜索、继续、重命名、删除 |
-| 模型服务 | 七家预设、官方来源图标、可修改的地址/模型、思考强度选项 |
-| AI 对话与修改 | 本地资料检索、读取诊断、提出完整主程序；原生差异预览、确认应用、恢复上一版 |
-| 项目管理 | 新建空白/正方形项目，识别官方 AIM Python 项目配置 |
-| 格式互通 | 普通 JSON `.aimpython` 导入导出，保留配置元数据，转换槽位编号 |
-| 检查 | Python AST 语法、部分其他平台接口/无等待循环提示，汇总 VS Code 诊断 |
-| 内置资料 | Python 全部 15 个分类、Logic 12 个子页、Python 概览与 3 篇项目/课堂指南，共 31 篇；中文/英文/方法名搜索 |
-| 自动导出 | 可选：保存主程序后更新 `dist/<项目名>.aimpython` |
-| 官方扩展桥接 | 设备状态、下载、运行、停止入口；下载/运行需开启实验设置并现场验证 |
+| 对话编程 | 描述任务，AI 读取当前程序与相关资料，生成修改建议 |
+| 看清修改 | 右侧原生差异视图显示逐行增删；点击应用才修改代码，支持恢复 |
+| 流式回答 | Markdown、表格、代码高亮、实际模型名；显示接口公开返回的思考内容 |
+| 保存上下文 | 对话自动保存在本机；新对话保留历史，支持搜索、继续、重命名和删除 |
+| 查阅 AIM API | 31 篇中文速查，覆盖 Python 全部 15 类与 Logic 12 个子页 |
+| 项目互通 | 创建 / 导入 / 导出 `.aimpython`；手动导出后自动用 VEXcode AIM 打开 |
+| 机器人调试 | 按需 Wi-Fi 连接、状态和目标读取、有限单步测试、结果分析 |
+| 自选模型 | DeepSeek、Qwen、Kimi、GLM、OpenAI、Claude、Gemini 预设及自定义接口 |
 
-## 导入与同步说明
+<p align="center">
+  <img src="docs/assets/chat.png" alt="AI 回答、思考展示与代码修改入口" width="310" />
+  &nbsp;&nbsp;
+  <img src="docs/assets/robot.png" alt="机器人调试页：模拟演示、自动连接和单步测试" width="310" />
+</p>
 
-`.py` 是源码；`.aimpython` 是包含源码、平台、配置等信息的项目文件，**不能直接改后缀**。
+<p align="center"><sub>截图来自隔离的界面测试，回答、模型名与机器人数据为演示样例，不代表真实模型或实机验收。</sub></p>
 
-手动导出会将导出路径直接交给已安装的 VEXcode AIM，无需设置系统文件关联。默认检测常见安装路径；自定义位置填写 `aimAI.applicationPath`。项目页的“导出后用 VEXcode AIM 打开”对应 `aimAI.openAfterExport`。应用有未保存项目时，仍需处理官方保存提示。启动失败不会删除已导出的文件。
+## 五分钟开始
 
-插件以 VS Code 主程序为主版本。`aimAI.autoExport` 只更新磁盘文件，已经打开的 VEXcode AIM 项目不会自动刷新，需要重新打开导出文件。不要同时在两个编辑器修改同一版本。
+### 1. 安装
 
-VEXcode AIM 会重新生成配置区域。导出时保护该区域；导入时兼容 4.67.0 保存文件中可能重复的相邻区域起始注释，保留实际代码和配置。普通源码导出要求标准 `from vex import *`、`robot = Robot()` 开头或完整配置区域。
+从 [GitHub Releases](https://github.com/HelloWorld-slc/aim-ai/releases) 下载 `aim-ai-0.4.0.vsix`。在 VS Code 扩展页选择 **⋯ → 从 VSIX 安装**，安装后执行 **Developer: Reload Window**，打开侧栏的 **AI** 图标。
 
-当前仅支持单文件 Python 文本项目。不支持积木、多文件打包、图片/声音资源压缩包。正式竞赛模板与规则需教师另行核对；本插件课堂模板不等于官方参赛模板。
+当前通过 GitHub 分发，尚未上架扩展市场。
 
-## 回答、思考和代码差异
+### 2. 打开 AIM 项目
 
-回答支持 Markdown 标题、粗体、列表、引用、表格和代码块；Python、JSON、diff 代码有语法高亮，可复制。消息标题使用 API 返回的模型 ID；接口未返回名称时使用请求中的模型 ID。旧版记录没有保存名称时不会冒认成当前模型。
+使用 **打开文件夹** 选择 AIM Python 项目根目录，例如 `AIM_Square`。目录内应有 `.vscode/vex_project_settings.json`；只打开一个 `.py` 文件无法识别项目。
 
-默认逐步显示回答；思考区展示 API 实际提供的 reasoning_content 或 thinking 文本，可展开/折叠。服务商未提供、关闭思考或只提供加密数据时，不编造思考内容。工具生成期间显示当前阶段、已接收字符和等待时间。思考内容和回答分开保存，历史摘要不发送思考内容。
+没有项目时，在「项目」页新建空白 / 100 mm 正方形模板，或导入 `.aimpython`。新建与导入需要已由 **VEX 官方 VS Code 扩展** 下载 AIM Python SDK；未安装时先用官方扩展创建一次 AIM Python 项目。
 
-代码建议生成完整并通过检查后，自动在右侧打开修改前/建议代码的比较视图，显示原生红绿增删、行号，并在侧栏统计新增/删除行数。两个比较版本都是只读快照；点击“应用修改”才写入编辑器。如果回答只有一个完整 AIM Python 代码块，也会自动识别并检查；零散片段和多套备选代码不会被当作整个程序替换。
+### 3. 配置自己的模型
 
-取消或断流时保留已收到内容，标记为未完成，不应用半段代码。生成期间约每 2 秒保存一次检查点，完成/取消时保存最终接收内容；意外退出后恢复最近检查点并标记中断。
+在「模型」页选择服务商，确认接口地址和模型 ID，输入自己的 API Key，然后测试连接。模型名称及可用思考档位以账号和服务商支持情况为准，预设可以修改。
 
-## 对话历史
+API Key 保存到 VS Code SecretStorage，不写入项目、聊天记录或版本库。服务商按自己的规则计费，本插件不附带模型额度。
 
-发送的消息、AI 回答和代码建议副本会自动写入 VS Code 当前工作区的扩展数据目录，每份对话一个 JSON 文件。重新打开同一个文件夹后，恢复上次对话；新对话不清空旧记录。可以在“历史”页按标题或项目搜索、继续、重命名和删除。记录为本机明文，不包含 API 密钥，不自动同步云端；包含用户主动输入的内容和建议源码。
+### 4. 描述、检查、应用
 
-完整记录保存在本机，发送给模型的历史摘录最多 6 条用户/AI 消息、16,000 字符，当前程序会重新读取。打开旧记录不会自动恢复可应用的修改按钮，旧代码建议仅供查看。0.1.1 及更早版本未保存到磁盘的聊天无法补回。
+> 请让机器人以 20% 速度走一个边长 100 mm 的正方形，完成后停止。先查 AIM 的运动接口，并说明修改。
 
-## 机器人联调
+等待回答和右侧代码比较 → 查看增删 → **应用修改** → **检查代码** → 保存。语法检查通过不等于真实动作正确。
 
-目前没有自主实现蓝牙下载、官方编辑器双向实时同步或通用 MCP 服务器。第一阶段优先复用官方扩展下载，减少重复实现协议。
+### 5. 导出并打开
 
-联调准备好后：打开单个 AIM 项目根目录，连接机器人，在设置中开启 `aimAI.experimentalHardware`，关闭官方 `RunAfterDownload`。选择设备、槽位，先检查并下载，再单独运行。下载会覆盖所选槽位。模型本身没有下载或运行工具。
+点击 **导出 .aimpython**，默认交给已安装的 VEXcode AIM 打开。之后通过官方应用进行机器人连接和下载。
 
-“请求停止”调用官方扩展停止命令，不能保证断连时停止，也不是硬件急停替代品。未知返回值和“未连接设备”不会显示下载成功。USB、蓝牙、固件与官方扩展的实际兼容性需要逐项验证。
+`.py` 是源码，`.aimpython` 是项目容器，**不能只改后缀**。手动导出与打开已在 VEXcode AIM 4.67.0 验证；网页端导入仍待独立验证。
 
-## 资料与开发
+## 机器人连接与 AI 调试
 
-资料在 `resources/knowledge`，每篇提供中文速查、接口或语法索引、来源链接和整理日期。目录对照 [VEX AIM Python](https://api.vex.com/aim/home/python/index.html) 整理，包含：
+0.4.0 整合 [flashzdw/VEX-AIM-MCP](https://github.com/flashzdw/VEX-AIM-MCP) 与 [VEX 官方 WebSocket 库](https://github.com/VEX-Robotics/AIM_Websocket_Library)，保留上游 MIT 许可与固定版本记录。
 
-- 15 个分类：Motion、Emoji、Kicker、Sound、LED、Message、Macro、AI Vision、Screen、Controller、Inertial、Console、Robot、Logic、MicroPython Libraries。
-- Logic 12 个子页：Control、Timer、Variables、Functions、Events、Math、Random、Operators、Comments、Custom Colors、String Formatting、Threads。
-- MicroPython Libraries 页提供全部 14 个模块的版本文档入口；模块完整函数、官网图片和完整示例通过官方链接查阅。
+1. 在「机器人」页点击 **安装调试环境**，需要 Python 3.10+。
+2. 先用 **模拟演示** 验证界面；实机使用 [配网教程](docs/ROBOT_DEBUG.md) 获取 IP。
+3. 保存 IP 并保留 **AI 按需自动连接**。AI 需要状态时自动连接，无需再次确认；普通聊天不会先连接。
+4. AI 可以读取状态、提出测试。直行或转向由用户点击执行，结果可再交给 AI 分析。
 
-在侧栏 **AIM 资料** 中展开 Logic，或搜索“线程”“屏幕”、`draw_rectangle` 等名称。初始自动引用按相关性选取，最多 4 篇、16,000 字符；模型可继续使用 `read_reference` 读取任一资料，无需额外嵌入服务。完整目录可离线使用，打开官方链接需要联网。
+| 自动完成 | 用户点击执行 |
+| --- | --- |
+| 按需连接、读取电量 / 位置 / 朝向、读取有限目标列表 | 直行 1–200 mm、右转 1–90°、速度 10–30% |
+| 生成待执行测试建议 | 下载 / 运行项目、应用代码修改 |
 
-API 不确定时应核对官方页面和本机 SDK。部分默认值存在版本差异，生成代码应显式指定运动单位。AI 仍可能编造接口，语法检查无法证明动作正确。
+连接会开启新的远程调试会话，并重置会话朝向。它不能旁观验证机器人上已下载的学生程序，也不提供蓝牙文件传输。断网时停止请求无法保证送达。
 
-开发使用 Node.js 20+：
+本地连接与手动测试不调用模型；AI 辅助每轮最多 3 次模型请求、2 次状态读取，仅传输受限摘要。详见 [连接、费用与排障](docs/ROBOT_DEBUG.md)。
 
-```text
+## 环境与兼容性
+
+| 组件 | 用途 |
+| --- | --- |
+| 桌面 VS Code 1.96+ | 运行扩展；重点面向 Windows，当前本地验收为 Windows 11 |
+| Windows 10 | 课堂目标系统，尚待独立机器验收 |
+| 模型 API 与互联网 | 使用 AI；支持 Chat Completions 兼容接口与 Claude Messages |
+| Python 3 | 本地语法检查；机器人调试要求 3.10+ |
+| VEX 官方 VS Code 扩展 / AIM SDK | 新建、导入项目及实验性的官方下载命令桥接 |
+| VEXcode AIM 桌面应用 | 自动打开导出的项目，再使用官方连接 / 下载功能 |
+| AIM 机器人与互通 Wi-Fi | 可选的真实机器人调试；模拟演示无需硬件 |
+
+普通使用者不需要安装 Node.js、Git、Docker、向量数据库或单独配置 MCP 客户端。机器人 Python 依赖按需安装到插件专用环境。
+
+## 范围与数据
+
+- **项目格式：** 当前处理单文件 AIM Python；不打包积木、多文件程序或自定义音视频资源。
+- **同步：** 保存自动导出只更新文件，已打开的 VEXcode AIM 不会自动刷新；尚无双向实时同步。
+- **资料：** 内置自行整理的中文摘要、接口索引与官方链接，覆盖分类不等于镜像全部教程。MicroPython 14 个模块提供官方文档入口。
+- **思考：** 仅展示 API 返回的可见文本；服务商未提供的隐藏思考无法读取。关闭流式可兼容不支持 SSE 的接口。
+- **历史：** 完整对话和思考文本保存在本机工作区扩展数据目录；发送近期历史摘录时不附带保存的思考文本。
+- **模型输入：** 提问、当前程序、近期历史与相关资料发往用户选择的服务；开启机器人辅助后可包含状态摘要。不会上传摄像头画面。
+- **实机：** 官方扩展下载 / 运行桥接默认关闭，`aimAI.experimentalHardware` 可开启；实际兼容性仍待验收，与 Wi-Fi 调试开关独立。
+
+## 开发与贡献
+
+```sh
 npm ci
 npm run typecheck
 npm test
 npm run build
-node tests/run-integration.cjs
 npm run package
 ```
 
-集成测试使用本机 VS Code；非默认路径可设置 `AIM_AI_VSCODE`。独立测试配置与扩展目录放在 `.vscode-test`，不使用真实密钥或机器人。测试结束自动关闭测试窗口。`AIM_AI_VISUAL=1` 可保留界面三分钟供人工检查。
+开发建议 Node.js 22+。机器人后端测试另外创建 Python 环境并安装 `robot/requirements.lock`；完整命令、VS Code 集成测试和界面测试见 [贡献指南](CONTRIBUTING.md)。
 
-源码中还提供 `docs/TESTING.md`（测试记录）、`docs/ARCHITECTURE.md`（架构与后续工作）、`THIRD_PARTY_NOTICES.md`（第三方说明）。原创源码采用 MIT；源码与试用安装包发布于 [GitHub](https://github.com/HelloWorld-slc/aim-ai)，尚未发布到扩展市场。
+```text
+src/                  扩展、AI 对话、项目与机器人客户端
+media/                侧栏界面与模型标识
+resources/knowledge/  AIM Python 速查资料
+robot/                MCP 适配层、上游代码和固定依赖
+tests/                核心、扩展宿主、界面与机器人模拟测试
+docs/                 使用说明、架构和验证记录
+```
+
+欢迎提交接口错误修正、真实设备兼容记录、课堂案例和模型适配。请使用仓库的 Issue / Pull Request 模板，报告结果时区分 **模拟、实机、真实模型**。
+
+[架构](docs/ARCHITECTURE.md) · [测试记录](docs/TESTING.md) · [版本记录](CHANGELOG.md) · [第三方许可](THIRD_PARTY_NOTICES.md) · [贡献指南](CONTRIBUTING.md)
+
+## 许可与致谢
+
+原创代码采用 [MIT License](LICENSE)。感谢 VEX-AIM-MCP、VEX AIM WebSocket Library、MCP SDK，以及 Markdown、流式解析和代码差异相关开源项目。捆绑依赖的版权和许可随包保留。
+
+VEX 与模型服务商的名称、标识和文档属于相应权利人，不因本项目开源而转为 MIT 授权。详见 [第三方说明](THIRD_PARTY_NOTICES.md)。

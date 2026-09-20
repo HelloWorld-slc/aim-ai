@@ -1,0 +1,42 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    name: Windows / Python ${{ matrix.python }}
+    runs-on: windows-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.14']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - name: Install isolated robot runtime
+        shell: pwsh
+        run: |
+          python -m venv .robot-runtime
+          .robot-runtime/Scripts/python.exe -m pip install --only-binary=:all: -r robot/requirements.lock
+      - run: .robot-runtime/Scripts/python.exe tests/robot_backend_test.py
+      - run: npm run test:robot
+      - run: npm run package
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aim-ai-python-${{ matrix.python }}
+          path: '*.vsix'
+          if-no-files-found: error
