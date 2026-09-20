@@ -2,7 +2,7 @@
   "name": "aim-ai",
   "displayName": "AIM AI",
   "description": "VEX AIM classroom coding: AI assistance, local references, project exchange and VEX integration.",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "publisher": "aim-ai-local",
   "license": "MIT",
   "engines": {
@@ -233,7 +233,7 @@
           "type": "boolean",
           "default": true,
           "scope": "application",
-          "description": "已安装调试环境并保存连接设置后，允许 AI 按需自动连接和读取状态，不再询问连接授权。运动测试仍需用户点击执行。"
+          "description": "已安装调试环境并保存连接设置后，允许 AI 按需自动连接和读取状态。自主运动需在对话框为本轮勾选；本轮不使用 MCP 可覆盖自动连接。"
         }
       }
     }

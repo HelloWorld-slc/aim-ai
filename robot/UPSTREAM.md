@@ -14,3 +14,5 @@ Changes in behavior are in the adapter: explicit connection, fresh-status checks
 The official Robot constructor sends ProgramInit and resets the session heading. A connection is a new remote debugging session, not passive observation of a downloaded on-robot program. Host changes start a new server process. Source pinning is intentional; updates require compatibility tests.
 
 Full camera files, audio, arbitrary filesystem paths, continuous drive tools, shell execution, and user Python execution are not exposed by this adapter.
+
+Version 0.5.0 adds one bounded batch tool (up to eight steps), forward/reverse and left/right steps, selected telemetry fields, tolerance comparisons, and partial failure reports. The model receives this tool only for a user-authorized turn; the host enforces one batch per turn. Upstream Python source is still unchanged. Simulation and status-only hardware checks do not certify physical motion accuracy.

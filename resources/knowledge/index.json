@@ -543,5 +543,26 @@
     ],
     "file": "classroom.md",
     "group": "guide"
+  },
+  {
+    "id": "robot-debug",
+    "title": "MCP 调试 · 参数、批量运动与结果判断",
+    "keywords": [
+      "mcp",
+      "debug",
+      "调试",
+      "自主",
+      "参数",
+      "返回值",
+      "容差",
+      "批量",
+      "位置偏差",
+      "run_robot_batch",
+      "read_robot_snapshot",
+      "fields",
+      "确认运动"
+    ],
+    "file": "robot-debug.md",
+    "group": "guide"
   }
 ]

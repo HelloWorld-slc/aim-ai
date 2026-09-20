@@ -31,9 +31,9 @@ def create_server(host, simulate=False, token=""):
         return await backend.connect()
 
     @server.tool()
-    async def robot_snapshot(include_vision: bool = False) -> dict:
+    async def robot_snapshot(include_vision: bool = False, fields: list[str] | str | None = None) -> dict:
         """Read a bounded snapshot; rejects missing, disconnected or stale status."""
-        return backend.snapshot(include_vision)
+        return backend.snapshot(include_vision, fields)
 
     @server.tool()
     async def robot_test(kind: str, amount: float, speed: float, approval: str) -> dict:
@@ -41,6 +41,14 @@ def create_server(host, simulate=False, token=""):
         if not token or not secrets.compare_digest(approval, token):
             raise ValueError("动作测试必须由插件中的用户按钮启动。")
         return await backend.run_test(kind, amount, speed)
+
+    @server.tool()
+    async def robot_batch(steps: list[dict], approval: str, fields: list[str] | str | None = None,
+                          distanceToleranceMm: float = 10, headingToleranceDeg: float = 5) -> dict:
+        """Execute one bounded batch authorized by the plugin, return one telemetry comparison."""
+        if not token or not secrets.compare_digest(approval, token):
+            raise ValueError("批量动作需要插件中的本轮自主运动授权。")
+        return await backend.run_batch(steps, fields, distanceToleranceMm, headingToleranceDeg)
 
     @server.tool()
     async def robot_stop() -> dict:

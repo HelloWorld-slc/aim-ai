@@ -16,6 +16,7 @@ exports.run = async function () {
   let robotMode = '';
   let robotCalls = 0;
   let robotReply = '';
+  let robotToolNames = [];
   try {
     const ext = vscode.extensions.getExtension('aim-ai-local.aim-ai');
     assert.ok(ext, 'development extension registered');
@@ -56,12 +57,16 @@ exports.run = async function () {
     server = http.createServer(async (req, res) => {
       let body = ''; for await (const chunk of req) body += chunk;
       const input = JSON.parse(body);
+      robotToolNames = (input.tools || []).map(t => t.function.name);
       assert.equal(input.reasoning_effort, 'high');
       if (input.messages[0].content.includes('connection test')) {
         res.end(JSON.stringify({ choices: [{ message: { content: 'OK' } }] })); return;
       }
       if (robotMode) {
         robotCalls++;
+        if (robotMode.startsWith('batch') && (input.messages.at(-1).role !== 'tool' || robotMode === 'batch-flood')) {
+          res.end(JSON.stringify({ choices: [{ message: { content: null, tool_calls: [{ id: `batch-${robotCalls}`, type: 'function', function: { name: 'run_robot_batch', arguments: JSON.stringify({ steps: [{ kind: 'move', amount: 20, speed: 20 }, { kind: 'move', amount: 20, speed: 20, direction: 'backward' }], fields: ['positionMm'] }) } }] } }] })); return;
+        }
         if (robotMode === 'ordinary') { res.end(JSON.stringify({ choices: [{ message: { content: '普通代码解释，不读取机器人。' } }] })); return; }
         if (robotMode === 'proposal') {
           res.end(JSON.stringify({ choices: [{ message: { content: null, tool_calls: [{ id: 'robot-plan', type: 'function', function: { name: 'propose_robot_test', arguments: JSON.stringify({ kind: 'move', amount: 50, speed: 20, explanation: '测试一次短距离直行。' }) } }] } }] })); return;
@@ -145,7 +150,7 @@ exports.run = async function () {
     await vscode.commands.executeCommand('aimAI.open'); report('sidebar webview created');
     const context = await api.knowledge.context('足球视觉'); assert.ok(context.ids.includes('vision')); report('bundled reference retrieval');
     const catalog = api.knowledge.catalog();
-    assert.equal(catalog.length, 31); assert.equal(catalog.filter(t => t.parent === 'logic').length, 12);
+    assert.equal(catalog.length, 32); assert.equal(catalog.filter(t => t.parent === 'logic').length, 12);
     assert.ok(catalog.find(t => t.id === 'screen').searchText.includes('draw_rectangle'));
     report('complete Python catalog available in extension host');
     readReferenceTest = true;
@@ -215,7 +220,52 @@ exports.run = async function () {
     api.robot.ensureForAI = async () => { attempts++; throw new Error('simulated connection failure'); };
     robotCalls = 0; await api.assistant.send('连接失败时不要无限重试');
     assert.equal(attempts, 1); assert.equal(robotCalls, 3); report('failed auto connection is attempted only once per task');
+    robotMode = 'snapshot'; robotCalls = 0; attempts = 0;
+    await api.assistant.send('连接不可用时继续给我代码建议');
+    assert.equal(robotCalls, 2); assert.equal(attempts, 1); assert.match(robotReply, /simulated connection failure/); report('MCP connection error returns to model for a normal follow-up answer');
     api.robot.ensureForAI = originalConnect;
+    robotMode = 'ordinary';
+    await api.assistant.send('只讲解程序，不使用MCP', true, true, true);
+    assert.equal(api.robot.state().connected, false); assert.ok(!robotToolNames.includes('read_robot_snapshot')); assert.ok(!robotToolNames.includes('run_robot_batch')); report('explicit no-MCP option overrides auto connection and motion authorization');
+    const runtimeInstalled = api.robot.installed;
+    api.robot.installed = false;
+    await api.assistant.send('环境未安装也能问答', true, true);
+    assert.ok(robotToolNames.includes('propose_program')); assert.ok(!robotToolNames.includes('read_robot_snapshot')); report('missing MCP runtime degrades to normal coding without blocking chat');
+    api.robot.installed = runtimeInstalled;
+    robotMode = 'batch'; robotCalls = 0;
+    await api.assistant.send('执行一批前进和后退，比较位移', false, true);
+    assert.equal(robotCalls, 2); assert.ok(robotToolNames.includes('run_robot_batch'));
+    const batchReply = robotReply.slice(robotReply.indexOf('{'));
+    assert.equal(JSON.parse(batchReply).completedSteps, 2); assert.equal(JSON.parse(batchReply).status, 'completed');
+    assert.equal(JSON.parse(batchReply).after.batteryPercent, undefined);
+    assert.equal(api.robot.state().report.net.displacementMm, 0); report('authorized AI batch executes once and returns selected telemetry for analysis in two requests');
+    assert.ok(api.assistant.conversationState().current.messages.some(m => m.text.includes('自主调试结果'))); report('batch results persist in conversation history');
+    const beforeDenied = await api.robot.read(false);
+    robotCalls = 0;
+    await api.assistant.send('本轮没有勾选自主运动');
+    assert.ok(!robotToolNames.includes('run_robot_batch')); assert.match(robotReply, /不支持的工具/);
+    assert.equal((await api.robot.read(false)).positionMm.y, beforeDenied.positionMm.y); report('motion permission expires each turn and an unadvertised tool call cannot execute');
+    robotMode = 'batch-flood'; robotCalls = 0;
+    const originalBatch = api.robot.executeAutonomous.bind(api.robot); let batches = 0;
+    api.robot.executeAutonomous = async (...args) => { batches++; return originalBatch(...args); };
+    await api.assistant.send('只做一批，禁止重复动作', false, true);
+    assert.equal(batches, 1); assert.equal(robotCalls, 3); report('repeated model batch calls cannot exceed one batch per turn');
+    let began;
+    const startedBatch = new Promise(resolve => { began = resolve; });
+    api.robot.executeAutonomous = (...args) => { began(); return originalBatch(...args); };
+    robotMode = 'batch';
+    const cancelTask = api.assistant.send('取消测试', false, true);
+    const rejected = assert.rejects(cancelTask, /取消|中止|abort/i);
+    await startedBatch;
+    await new Promise(resolve => setTimeout(resolve, 80));
+    api.assistant.cancel(); await rejected;
+    await new Promise(resolve => setTimeout(resolve, 300));
+    assert.equal((await api.robot.read(false)).stopped, true); report('chat cancellation propagates to MCP batch and stops the simulated robot');
+    api.robot.executeAutonomous = originalBatch;
+    await api.robot.disconnect();
+    robotMode = 'ordinary';
+    await api.assistant.send('断开后继续正常解释', false, false, true);
+    assert.equal(api.robot.state().connected, false); report('ordinary chat continues after MCP disconnect and cancellation');
     await config.update('robotAutoConnect', false, vscode.ConfigurationTarget.Global);
     assert.equal(api.robot.canAutoConnect, false); report('automatic connection switch disables automatic tool access');
     robotMode = '';

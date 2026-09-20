@@ -48,6 +48,7 @@ function renderChats() {
 }
 function renderConversation(data) {
   if (hasConversation) saveDraft();
+  if (activeChatId !== data.activeId) el('robot-autonomous').checked = false;
   activeChatId = data.activeId; chats = data.chats || [];
   el('prompt').value = drafts[draftKey()] || ''; hasConversation = true;
   el('messages').replaceChildren(); messageNodes.clear(); setProposal(null);
@@ -110,7 +111,9 @@ el('prompt').addEventListener('input', saveDraft);
 function send() {
   const prompt = el('prompt').value.trim();
   if (busy || !prompt) return;
-  post('send', { prompt, robotDebug: el('robot-assist').checked }); el('prompt').value = ''; saveDraft();
+  post('send', { prompt, robotDebug: el('robot-assist').checked, robotAutonomous: el('robot-autonomous').checked, robotDisabled: el('robot-disabled').checked });
+  el('robot-autonomous').checked = false;
+  el('prompt').value = ''; saveDraft();
 }
 function renderMarkdown(target, value) {
   target.innerHTML = DOMPurify.sanitize(markdown.render(value), { ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 's', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'span', 'hr', 'a', 'table', 'thead', 'tbody', 'tr', 'th', 'td'], ALLOWED_ATTR: ['href', 'title', 'class'], ALLOW_DATA_ATTR: false });
@@ -183,7 +186,10 @@ function renderRobot() {
   if (!el('robot-host').value && r.host) el('robot-host').value = r.host;
   for (const id of ['robot-snapshot', 'robot-vision', 'robot-test']) el(id).disabled = !r.connected || !!r.busy;
   el('robot-analyze').disabled = busy || !!r.busy || !(r.snapshot || r.report);
-  el('robot-assist').disabled = busy || !(r.connected || r.autoConfigured);
+  el('robot-assist').disabled = busy || el('robot-disabled').checked || !(r.connected || r.autoConfigured);
+  el('robot-autonomous').disabled = busy || el('robot-disabled').checked || !(r.connected || r.autoConfigured);
+  el('robot-disabled').disabled = busy;
+  if (!(r.connected || r.autoConfigured)) el('robot-autonomous').checked = false;
   if (!r.connected && !r.autoConfigured) el('robot-assist').checked = false;
   if ((!robotInitialized || r.connected) && r.mode) { el('robot-mode').value = r.mode; robotInitialized = true; }
   el('robot-status').textContent = r.busy ? '正在处理…可点击停止 / 取消' : r.connected ? (r.mode === 'simulation' ? '模拟演示已连接 · 未连接实机' : `实机远程调试 · ${r.host}`) : r.installed ? '环境已准备好，尚未连接' : '首次使用需安装本地调试环境';
@@ -196,6 +202,10 @@ function renderRobot() {
   el('robot-execute-proposal').disabled = !r.connected || !!r.busy;
 }
 el('stream-responses').addEventListener('change', () => post('streamResponses', { value: el('stream-responses').checked }));
+el('robot-disabled').addEventListener('change', () => {
+  if (el('robot-disabled').checked) { el('robot-assist').checked = false; el('robot-autonomous').checked = false; }
+  renderRobot();
+});
 el('thinking-effort').addEventListener('change', () => post('thinking', { value: el('thinking-effort').value }));
 el('open-after-export').addEventListener('change', () => post('openAfterExport', { value: el('open-after-export').checked }));
 el('robot-auto-connect').addEventListener('change', () => post('robotAutoConnect', { value: el('robot-auto-connect').checked }));

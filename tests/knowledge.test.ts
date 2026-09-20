@@ -13,7 +13,7 @@ test('bundled references cover every official Python category and Logic child', 
   const children = ['control', 'timer', 'variables', 'functions', 'events', 'math', 'random', 'operators', 'comments', 'colors', 'formatting', 'threads'];
   assert.deepEqual(knowledge.topics.filter(t => t.group === 'python' && t.id !== 'python' && !t.parent).map(t => t.id), categories);
   assert.deepEqual(knowledge.topics.filter(t => t.parent === 'logic').map(t => t.id), children);
-  assert.equal(knowledge.topics.length, 31);
+  assert.equal(knowledge.topics.length, 32);
   for (const topic of knowledge.topics.filter(t => t.group === 'python')) {
     assert.ok(topic.source?.startsWith('https://api.vex.com/aim/home/python/'));
     const body = await knowledge.read(topic.id);
@@ -45,9 +45,12 @@ test('AI retrieves new topics from Chinese tasks and bare or qualified API names
 
 test('sidebar catalog includes nested pages and method-name searchable text', async () => {
   const knowledge = await library(); const catalog = knowledge.catalog();
-  assert.equal(catalog.length, 31);
+  assert.equal(catalog.length, 32);
   assert.equal(catalog.find(t => t.id === 'timer')?.parent, 'logic');
   assert.ok(catalog.find(t => t.id === 'screen')?.searchText.includes('draw_rectangle'));
   assert.ok(catalog.find(t => t.id === 'threads')?.searchText.includes('线程'));
   assert.ok(catalog.every(t => t.searchText.length > 0));
+  const guide = await knowledge.read('robot-debug');
+  for (const field of ['run_robot_batch', 'fields', 'batteryPercent', 'positionMm', 'headingDeg', 'stopped', 'vision', 'withinTolerance', 'net.displacementMm']) assert.ok(guide.includes(field));
+  assert.ok((await knowledge.context('MCP自主调试 返回参数')).ids.includes('robot-debug'));
 });

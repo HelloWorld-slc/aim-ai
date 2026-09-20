@@ -3,7 +3,7 @@ import { spawn } from 'node:child_process';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
-import { RobotClient, RobotReport, RobotSnapshot, RobotTest, robotHost, robotSummary, robotTest, testLabel } from './core/robot';
+import { RobotClient, RobotReport, RobotObservation, RobotBatchReport, RobotFields, RobotTest, robotBatch, robotHost, robotSummary, robotTest, testLabel } from './core/robot';
 
 function processRun(command: string, args: string[], signal?: AbortSignal, timeout = 180000): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -25,8 +25,8 @@ export class RobotDebug {
   private connected = false;
   private simulate = false;
   private host = '';
-  private snapshot?: RobotSnapshot;
-  private report?: RobotReport;
+  private snapshot?: RobotObservation;
+  private report?: RobotReport | RobotBatchReport;
   private proposed?: { id: string; plan: RobotTest; explanation: string; expires: number };
   private lastError = '';
   private readyPath: string;
@@ -111,10 +111,10 @@ export class RobotDebug {
     this.emit('notice', this.simulate ? 'AI 正在按需连接模拟调试后台…' : `AI 正在按需连接机器人 ${this.host}…`);
     await this.connect(this.host, this.simulate, signal);
   }
-  async read(includeVision = false, signal?: AbortSignal) {
+  async read(includeVision = false, signal?: AbortSignal, fields?: RobotFields) {
     if (!this.connected) throw new Error('请先连接机器人或模拟演示。');
     if (this.busy) throw new Error('动作或连接正在处理，请等待后读取。');
-    try { this.snapshot = await this.client.snapshot(includeVision, signal); this.report = undefined; this.lastError = ''; return this.snapshot; }
+    try { this.snapshot = await this.client.snapshot(includeVision, signal, fields); this.report = undefined; this.lastError = ''; return this.snapshot; }
     catch (error) { this.lastError = error instanceof Error ? error.message : '状态读取失败。'; throw error; }
     finally { this.publish(); }
   }
@@ -142,6 +142,28 @@ export class RobotDebug {
     // Explicit click in the robot page is the only execution path for proposals.
     this.proposed = undefined; this.publish();
     await this.execute(p.plan);
+  }
+  async executeAutonomous(value: unknown, authorized: boolean, parentSignal: AbortSignal) {
+    if (!authorized) throw new Error('本轮未开启 AI 自主运动，不能执行。');
+    const plan = robotBatch(value);
+    if (!this.connected) throw new Error('机器人未连接，未执行任何动作。');
+    let result: RobotBatchReport | undefined;
+    await this.operationRun(async signal => {
+      if (parentSignal.aborted) throw new Error('本轮已取消，未执行动作。');
+      const cancel = () => { this.operation?.abort(); void this.client.stop().catch(() => {}); };
+      parentSignal.addEventListener('abort', cancel, { once: true });
+      this.report = undefined; this.proposed = undefined;
+      this.emit('notice', `正在执行本轮授权的 ${plan.steps.length} 步调试；可随时点击取消或停止。`);
+      try {
+        result = await this.client.batch(plan, signal);
+        this.report = result; this.snapshot = result.after;
+        this.emit('notice', `批量调试结束：${result.completedSteps}/${result.requestedSteps} 步，状态 ${result.status}。正在交给 AI 分析。`);
+      } catch (error) {
+        await this.client.stop().catch(() => {});
+        throw error;
+      } finally { parentSignal.removeEventListener('abort', cancel); }
+    });
+    return result!;
   }
   async stop() {
     if (this.connected) {

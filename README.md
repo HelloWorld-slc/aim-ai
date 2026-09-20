@@ -6,8 +6,10 @@
 
 AI-assisted VEX AIM coding · Built for the classroom
 
+**简体中文** · [English](README.en.md)
+
 [![CI](https://github.com/HelloWorld-slc/aim-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/HelloWorld-slc/aim-ai/actions/workflows/ci.yml)
-[![Preview](https://img.shields.io/badge/preview-0.4.0-48c9b0)](https://github.com/HelloWorld-slc/aim-ai/releases/tag/v0.4.0)
+[![Preview](https://img.shields.io/badge/preview-0.5.0-48c9b0)](https://github.com/HelloWorld-slc/aim-ai/releases/tag/v0.5.0)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![VS Code](https://img.shields.io/badge/VS_Code-1.96%2B-007ACC)](https://code.visualstudio.com/)
 
@@ -19,7 +21,7 @@ AI-assisted VEX AIM coding · Built for the classroom
 
 AIM AI 把模型对话、官方 API 速查、代码差异、项目导出和机器人调试放进同一个侧栏。学生描述目标，AI 提出代码，学生查看修改并测试；教师可以复用项目模板组织课堂活动。项目起源于《绿茵智控：AI 足球机器人挑战项目》，也适用于正方形行走、视觉识别和运动控制入门。
 
-> **当前为 0.4.0 预览版。** 编辑与项目互通已验证；机器人 MCP 流程已通过模拟测试，Wi-Fi 实机、下载与运动效果仍待现场验收。本项目是独立开源工具，与 VEX Robotics 无隶属或授权关系。
+> **当前为 0.5.0 预览版。** 编辑与项目互通已验证；MCP 流程已通过模拟测试，Wi-Fi 连接和状态读取已在一台实机验证；新增自主批量运动的物理效果、下载仍待现场验收。本项目是独立开源工具，与 VEX Robotics 无隶属或授权关系。
 
 ## 能做什么
 
@@ -29,15 +31,15 @@ AIM AI 把模型对话、官方 API 速查、代码差异、项目导出和机�
 | 看清修改 | 右侧原生差异视图显示逐行增删；点击应用才修改代码，支持恢复 |
 | 流式回答 | Markdown、表格、代码高亮、实际模型名；显示接口公开返回的思考内容 |
 | 保存上下文 | 对话自动保存在本机；新对话保留历史，支持搜索、继续、重命名和删除 |
-| 查阅 AIM API | 31 篇中文速查，覆盖 Python 全部 15 类与 Logic 12 个子页 |
+| 查阅 AIM API | 32 篇中文速查，覆盖 Python 全部 15 类与 Logic 12 个子页 |
 | 项目互通 | 创建 / 导入 / 导出 `.aimpython`；手动导出后自动用 VEXcode AIM 打开 |
-| 机器人调试 | 按需 Wi-Fi 连接、状态和目标读取、有限单步测试、结果分析 |
+| 机器人调试 | 按需 Wi-Fi 连接、可选字段读取、自主批量测试、遥测误差比较 |
 | 自选模型 | DeepSeek、Qwen、Kimi、GLM、OpenAI、Claude、Gemini 预设及自定义接口 |
 
 <p align="center">
   <img src="docs/assets/chat.png" alt="AI 回答、思考展示与代码修改入口" width="310" />
   &nbsp;&nbsp;
-  <img src="docs/assets/robot.png" alt="机器人调试页：模拟演示、自动连接和单步测试" width="310" />
+  <img src="docs/assets/autonomous.png" alt="对话中的自主运动与不使用 MCP 选项" width="310" />
 </p>
 
 <p align="center"><sub>截图来自隔离的界面测试，回答、模型名与机器人数据为演示样例，不代表真实模型或实机验收。</sub></p>
@@ -46,7 +48,7 @@ AIM AI 把模型对话、官方 API 速查、代码差异、项目导出和机�
 
 ### 1. 安装
 
-从 [GitHub Releases](https://github.com/HelloWorld-slc/aim-ai/releases) 下载 `aim-ai-0.4.0.vsix`。在 VS Code 扩展页选择 **⋯ → 从 VSIX 安装**，安装后执行 **Developer: Reload Window**，打开侧栏的 **AI** 图标。
+从 [GitHub Releases](https://github.com/HelloWorld-slc/aim-ai/releases) 下载 `aim-ai-0.5.0.vsix`。在 VS Code 扩展页选择 **⋯ → 从 VSIX 安装**，安装后执行 **Developer: Reload Window**，打开侧栏的 **AI** 图标。
 
 当前通过 GitHub 分发，尚未上架扩展市场。
 
@@ -76,21 +78,32 @@ API Key 保存到 VS Code SecretStorage，不写入项目、聊天记录或版�
 
 ## 机器人连接与 AI 调试
 
-0.4.0 整合 [flashzdw/VEX-AIM-MCP](https://github.com/flashzdw/VEX-AIM-MCP) 与 [VEX 官方 WebSocket 库](https://github.com/VEX-Robotics/AIM_Websocket_Library)，保留上游 MIT 许可与固定版本记录。
+0.5.0 整合 [flashzdw/VEX-AIM-MCP](https://github.com/flashzdw/VEX-AIM-MCP) 与 [VEX 官方 WebSocket 库](https://github.com/VEX-Robotics/AIM_Websocket_Library)，保留上游 MIT 许可与固定版本记录。
 
 1. 在「机器人」页点击 **安装调试环境**，需要 Python 3.10+。
 2. 先用 **模拟演示** 验证界面；实机使用 [配网教程](docs/ROBOT_DEBUG.md) 获取 IP。
 3. 保存 IP 并保留 **AI 按需自动连接**。AI 需要状态时自动连接，无需再次确认；普通聊天不会先连接。
-4. AI 可以读取状态、提出测试。直行或转向由用户点击执行，结果可再交给 AI 分析。
+4. 在对话框展开 **机器人辅助与自主调试**。勾选 **本轮允许 AI 自主运动调试** 后，AI 可直接执行一批测试并分析结果，无需逐步再次确认。未勾选时保持只读和手动测试建议。
 
-| 自动完成 | 用户点击执行 |
+自主运动默认关闭，每次发送后取消勾选，历史不会恢复授权。AI 被要求尽量少移动、短距离验证；必要的多步动作合并一次请求，只返回一份汇总。每轮最多一批 8 步，总移动 800 mm、总转动 360°、预计用时含余量 45 秒，速度 10–30%。参数在整批开始前校验，偏差或失败会停止后续步骤。聊天取消会向后台发出停止请求。
+
+| 调试能力 | 说明 |
 | --- | --- |
-| 按需连接、读取电量 / 位置 / 朝向、读取有限目标列表 | 直行 1–200 mm、右转 1–90°、速度 10–30% |
-| 生成待执行测试建议 | 下载 / 运行项目、应用代码修改 |
+| 自主运动 | 本轮勾选后可前进 / 后退 1–200 mm，左 / 右转 1–90°，一次合并多步 |
+| 返回参数 | AI 可选电量、位置、朝向、停止状态、视觉，也可请求全部已开放字段 |
+| 判断结果 | 每步位移与转角误差、容差比较、整批净位移；AI 收到汇总后给出结论 |
+| 未开启自主运动 | 读取状态、提出待点击建议；不直接移动 |
+| 项目修改与下载 | 应用代码、下载 / 运行项目仍使用用户按钮 |
 
 连接会开启新的远程调试会话，并重置会话朝向。它不能旁观验证机器人上已下载的学生程序，也不提供蓝牙文件传输。断网时停止请求无法保证送达。
 
 本地连接与手动测试不调用模型；AI 辅助每轮最多 3 次模型请求、2 次状态读取，仅传输受限摘要。详见 [连接、费用与排障](docs/ROBOT_DEBUG.md)。
+
+## 不使用 MCP 也能编程
+
+MCP 是可选模块。无需安装机器人调试依赖或连接后台，仍可问答、写代码、查资料、查看差异、保存历史、导出项目。在对话框勾选 **本轮不使用 MCP（只编程）**，可覆盖自动连接设置。未安装环境时自动回到普通编程；连接失败时报告原因，继续静态分析，不编造测试结果。
+
+新增的 **资料 → MCP 调试** 详细解释所有开放参数、单位、字段筛选、批量报告和容差；自主运动时相关指南会提供给 AI。遥测比较可以辅助排查运动问题，但不等于外部量测，也不能证明编辑器中整段程序已执行正确。
 
 ## 环境与兼容性
 

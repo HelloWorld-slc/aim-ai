@@ -4,11 +4,11 @@
 
 ```text
 VS Code 侧栏
-  → Assistant：模型请求、3 个编程工具、2 个按需机器人工具、修改建议、备份/恢复
+  → Assistant：模型请求、3 个编程工具、2 个读取/建议工具、1 个按轮授权的批量运动工具、修改建议、备份/恢复
   → Conversations：工作区对话、原子持久化、历史摘录
   → Provider：服务预设、协议与思考参数适配
   → Application：Windows 官方应用启动，不经 shell
-  → Knowledge：31 篇本地资料、分类层级、关键词与方法名检索、来源
+  → Knowledge：32 篇本地资料、分类层级、关键词与方法名检索、来源
   → Projects：官方项目配置、单文件源码、.aimpython 转换
   → Validation：Python AST + VS Code diagnostics
   → Devices：已安装官方 VEX 扩展的有限命令桥接
@@ -17,7 +17,7 @@ VS Code 侧栏
           → VEX-AIM-MCP 函数 → 官方 AIM WebSocket 库 → 机器人
 ```
 
-AI 可调用 `read_reference`、`get_diagnostics`、`propose_program`；启用机器人辅助时另外开放 `read_robot_snapshot`、`propose_robot_test`。模型不能执行终端、任意文件操作、运动、下载或运行项目。API Key 使用 VS Code SecretStorage；Webview 不持有密钥，使用 CSP、禁用原始 HTML 的 Markdown 解析与 DOMPurify 白名单清理。模型地址只能从用户级配置指定，项目不能替换地址收走密钥。HTTP 重定向不跟随。
+AI 可调用 `read_reference`、`get_diagnostics`、`propose_program`；启用机器人辅助时另外开放 `read_robot_snapshot`、`propose_robot_test`。本轮自主运动开启后开放 `run_robot_batch`。模型不能执行终端、任意文件操作、下载或执行编辑器中的任意程序。API Key 使用 VS Code SecretStorage；Webview 不持有密钥，使用 CSP、禁用原始 HTML 的 Markdown 解析与 DOMPurify 白名单清理。模型地址只能从用户级配置指定，项目不能替换地址收走密钥。HTTP 重定向不跟随。
 
 资料索引包含 `group`、可选 `parent` 和 `source`。激活时加载全部内置摘要，验证文件名、唯一 id 和父级引用；资料页本地搜索标题、关键词及正文，Logic 子页可展开。初始模型上下文固定加入运行指南，再选最多 3 篇相关资料，合计不超过 16,000 字符；英文 API 采用词边界匹配，并支持从完整调用名提取方法名。AI 可按索引 id 继续读取资料，不接受任意路径。
 
@@ -45,12 +45,21 @@ AI 可调用 `read_reference`、`get_diagnostics`、`propose_program`；启用�
 
 ## MCP 机器人边界
 
-扩展使用 `@modelcontextprotocol/sdk` 1.30.0，与 Python `mcp` 1.30.0 配套维护，固定版本便于复现。后台仅注册连接、快照、有限测试、停止、断开 5 个工具；未注册上游完整工具集。Python 通过无 shell 的隐藏子进程启动，stdout 专用于 MCP，SDK 诊断转入 stderr。应用不开放本地 HTTP 控制端口。
+扩展使用 `@modelcontextprotocol/sdk` 1.30.0，与 Python `mcp` 1.30.0 配套维护，固定版本便于复现。后台仅注册连接、快照、单步测试、批量测试、停止、断开 6 个工具；未注册上游完整工具集。Python 通过无 shell 的隐藏子进程启动，stdout 专用于 MCP，SDK 诊断转入 stderr。应用不开放本地 HTTP 控制端口。
 
 `aimAI.robotAutoConnect` 默认开启，但只有依赖安装完成、连接设置已保存时才向 AI 提供自动能力。模型调用读取 / 提案时才连接，普通回答不触发连接。一轮只允许一次连接尝试、两次状态读取，最多三轮模型调用。手动测试结果由用户主动发送分析；模型读取得到的数据以受限摘要返回，不包含图像。
 
 官方 `Robot()` 初始化发送 ProgramInit、重置会话朝向，并打开状态 / 命令 / 图像 / 音频连接，因此这是新的远程调试会话，不能并行旁观已下载的学生程序。构造函数在 Python 主线程调用；连接超时由 TypeScript 侧结束子进程。真实状态要求连接有效、非空且更新距今不超过两秒。
 
-运动入口由扩展持有随机令牌，模型上下文和 Webview 均不持有。AI 只能登记有效两分钟的方案；用户按钮才走执行入口。TypeScript 与 Python 分别校验距离、角度、速度，后台拒绝并发动作。测试超时与取消尝试停止，失败后要求重新连接；网络停止请求不被表述为物理停止保证。
+运动入口由扩展持有随机令牌，模型上下文和 Webview 均不持有。未开启自主运动时，AI 只能登记有效两分钟的方案；单步用户按钮才走执行入口。0.5.0 新增本轮自主运动授权：只有发送请求明确带授权标记才向模型提供批量工具，主机再检查每轮一批上限；令牌仍仅由主机持有。TypeScript 与 Python 分别校验距离、角度、速度，后台拒绝并发动作。测试超时与取消尝试停止，失败后要求重新连接；网络停止请求不被表述为物理停止保证。
 
 `--simulate` 创建无机器人网络连接的内存对象。模式标签贯穿 MCP 返回、界面与模型摘要，测试结果不能冒充实机验证。状态读取会替换旧结果，避免界面将上次运动报告当作最新快照。
+
+
+## 0.5.0：批量结果与不依赖 MCP 的编程
+
+自主授权不保存在聊天或设置中，Webview 发送后清除勾选。每轮一批、最多八步，整批先校验距离、方向、速度、累计量和预计时长。TypeScript 与 Python 均检查。Python 保持整批互斥；异常、取消、偏差会停止后续步骤并保留可取得的部分结果。最后一轮模型请求不提供工具，保证用于总结而不是启动新的动作。
+
+`fields` 支持 all 或五个已开放字段的子集；来源和采样时间始终保留。遥测误差比较使用完整内部状态，与对外字段筛选独立。批量只返回一份起止快照与紧凑逐步误差，不把逐帧数据发给模型。参数全文放在 robot-debug 知识库，自主调试时提供给模型；已包含在相关资料中时不重复加入。
+
+不使用 MCP 时只提供三个编程工具，不启动 Python 后台。依赖未安装、配置不可用时自动回到普通编程；连接工具失败通过工具错误返回，模型可继续静态分析。MCP SDK 随插件打包，但 Python 调试环境按需安装，与编程功能独立。
