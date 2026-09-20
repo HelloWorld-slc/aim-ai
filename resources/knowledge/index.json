@@ -1,0 +1,547 @@
+[
+  {
+    "id": "start",
+    "title": "AIM 编程与运行方式",
+    "keywords": [
+      "开始",
+      "初始化",
+      "python",
+      "环境",
+      "项目"
+    ],
+    "file": "start.md",
+    "group": "guide"
+  },
+  {
+    "id": "python",
+    "title": "Python · 概览",
+    "file": "python.md",
+    "group": "python",
+    "source": "https://api.vex.com/aim/home/python/index.html",
+    "keywords": [
+      "python",
+      "基础",
+      "参数",
+      "返回值",
+      "语法"
+    ]
+  },
+  {
+    "id": "motion",
+    "title": "Motion · 运动",
+    "file": "motion.md",
+    "group": "python",
+    "source": "https://api.vex.com/aim/home/python/Motion.html",
+    "keywords": [
+      "移动",
+      "速度",
+      "前进",
+      "正方形",
+      "转",
+      "走",
+      "运动",
+      "move",
+      "turn",
+      "square",
+      "stop",
+      "全向"
+    ]
+  },
+  {
+    "id": "emoji",
+    "title": "Emoji · 表情",
+    "file": "emoji.md",
+    "group": "python",
+    "source": "https://api.vex.com/aim/home/python/Emoji.html",
+    "keywords": [
+      "表情",
+      "情绪",
+      "emoji",
+      "开心",
+      "脸",
+      "show_emoji",
+      "hide_emoji"
+    ]
+  },
+  {
+    "id": "kicker",
+    "title": "Kicker · 踢球器",
+    "file": "kicker.md",
+    "group": "python",
+    "source": "https://api.vex.com/aim/home/python/Kicker.html",
+    "keywords": [
+      "踢",
+      "射门",
+      "控球",
+      "持球",
+      "kicker",
+      "kick",
+      "place"
+    ]
+  },
+  {
+    "id": "sound",
+    "title": "Sound · 声音",
+    "file": "sound.md",
+    "group": "python",
+    "source": "https://api.vex.com/aim/home/python/Sounds.html",
+    "keywords": [
+      "声音",
+      "音效",
+      "音乐",
+      "音量",
+      "sound",
+      "play_note",
+      "play_file"
+    ]
+  },
+  {
+    "id": "led",
+    "title": "LED · 灯光",
+    "file": "led.md",
+    "group": "python",
+    "source": "https://api.vex.com/aim/home/python/LEDs.html",
+    "keywords": [
+      "灯",
+      "灯光",
+      "led",
+      "闪烁",
+      "亮",
+      "颜色"
+    ]
+  },
+  {
+    "id": "message",
+    "title": "Message · 双机消息",
+    "file": "message.md",
+    "group": "python",
+    "source": "https://api.vex.com/aim/home/python/Message.html",
+    "keywords": [
+      "双机",
+      "双",
+      "通信",
+      "协作",
+      "队友",
+      "消息",
+      "link",
+      "message"
+    ]
+  },
+  {
+    "id": "macro",
+    "title": "Macro · 组合动作",
+    "file": "macro.md",
+    "group": "python",
+    "source": "https://api.vex.com/aim/home/python/Macro.html",
+    "keywords": [
+      "宏",
+      "组合动作",
+      "macro",
+      "act happy",
+      "搜索球"
+    ]
+  },
+  {
+    "id": "vision",
+    "title": "AI Vision · 视觉",
+    "file": "vision.md",
+    "group": "python",
+    "source": "https://api.vex.com/aim/home/python/AI_Vision.html",
+    "keywords": [
+      "球",
+      "视觉",
+      "识别",
+      "追",
+      "vision",
+      "ball",
+      "tag",
+      "摄像",
+      "颜色识别",
+      "get_data"
+    ]
+  },
+  {
+    "id": "screen",
+    "title": "Screen · 屏幕与触摸",
+    "file": "screen.md",
+    "group": "python",
+    "source": "https://api.vex.com/aim/home/python/Screen.html",
+    "keywords": [
+      "屏幕",
+      "触摸",
+      "画",
+      "显示",
+      "screen",
+      "print_at",
+      "draw",
+      "pressing"
+    ]
+  },
+  {
+    "id": "controller",
+    "title": "Controller · 遥控器",
+    "file": "controller.md",
+    "group": "python",
+    "source": "https://api.vex.com/aim/home/python/Controller.html",
+    "keywords": [
+      "遥控",
+      "摇杆",
+      "按钮",
+      "按键",
+      "controller",
+      "onestick",
+      "axis",
+      "button"
+    ]
+  },
+  {
+    "id": "inertial",
+    "title": "Inertial · 惯性传感器",
+    "file": "inertial.md",
+    "group": "python",
+    "source": "https://api.vex.com/aim/home/python/Inertial.html",
+    "keywords": [
+      "惯性",
+      "陀螺仪",
+      "航向",
+      "校准",
+      "倾斜",
+      "碰撞",
+      "加速度",
+      "inertial",
+      "heading",
+      "yaw"
+    ]
+  },
+  {
+    "id": "console",
+    "title": "Console · 控制台",
+    "file": "console.md",
+    "group": "python",
+    "source": "https://api.vex.com/aim/home/python/Console.html",
+    "keywords": [
+      "控制台",
+      "打印",
+      "日志",
+      "输入",
+      "console",
+      "print",
+      "input"
+    ]
+  },
+  {
+    "id": "robot",
+    "title": "Robot · 机器人信息",
+    "file": "robot.md",
+    "group": "python",
+    "source": "https://api.vex.com/aim/home/python/Robot.html",
+    "keywords": [
+      "机器人信息",
+      "电池",
+      "电量",
+      "名称",
+      "battery",
+      "get_name",
+      "robot"
+    ]
+  },
+  {
+    "id": "logic",
+    "title": "Logic · 程序逻辑",
+    "file": "logic.md",
+    "group": "python",
+    "source": "https://api.vex.com/aim/home/python/Logic/index.html",
+    "keywords": [
+      "逻辑",
+      "logic",
+      "流程",
+      "程序结构"
+    ]
+  },
+  {
+    "id": "control",
+    "title": "Control · 流程控制",
+    "file": "control.md",
+    "group": "python",
+    "parent": "logic",
+    "source": "https://api.vex.com/aim/home/python/Logic/Controls.html",
+    "keywords": [
+      "控制",
+      "流程",
+      "循环",
+      "等待",
+      "条件",
+      "停止程序",
+      "wait",
+      "while",
+      "for",
+      "break",
+      "pass",
+      "stop_program"
+    ]
+  },
+  {
+    "id": "timer",
+    "title": "Timer · 计时器",
+    "file": "timer.md",
+    "group": "python",
+    "parent": "logic",
+    "source": "https://api.vex.com/aim/home/python/Logic/Timer.html",
+    "keywords": [
+      "计时",
+      "超时",
+      "定时",
+      "延迟",
+      "timer",
+      "time",
+      "event"
+    ]
+  },
+  {
+    "id": "variables",
+    "title": "Variables · 变量",
+    "file": "variables.md",
+    "group": "python",
+    "parent": "logic",
+    "source": "https://api.vex.com/aim/home/python/Logic/Variables.html",
+    "keywords": [
+      "变量",
+      "赋值",
+      "作用域",
+      "列表",
+      "元组",
+      "二维",
+      "variables",
+      "global",
+      "list",
+      "tuple",
+      "range",
+      "bool"
+    ]
+  },
+  {
+    "id": "functions",
+    "title": "Functions · 函数",
+    "file": "functions.md",
+    "group": "python",
+    "parent": "logic",
+    "source": "https://api.vex.com/aim/home/python/Logic/Functions.html",
+    "keywords": [
+      "函数",
+      "参数",
+      "返回",
+      "封装",
+      "functions",
+      "def",
+      "return",
+      "callback"
+    ]
+  },
+  {
+    "id": "events",
+    "title": "Events · 事件",
+    "file": "events.md",
+    "group": "python",
+    "parent": "logic",
+    "source": "https://api.vex.com/aim/home/python/Logic/Events.html",
+    "keywords": [
+      "事件",
+      "广播",
+      "触发",
+      "回调",
+      "events",
+      "event",
+      "broadcast",
+      "broadcast_and_wait"
+    ]
+  },
+  {
+    "id": "math",
+    "title": "Math · 数学",
+    "file": "math.md",
+    "group": "python",
+    "parent": "logic",
+    "source": "https://api.vex.com/aim/home/python/Logic/Math.html",
+    "keywords": [
+      "数学",
+      "角度",
+      "三角",
+      "弧度",
+      "取整",
+      "平方根",
+      "math",
+      "atan2",
+      "sqrt"
+    ]
+  },
+  {
+    "id": "random",
+    "title": "Random · 随机数",
+    "file": "random.md",
+    "group": "python",
+    "parent": "logic",
+    "source": "https://api.vex.com/aim/home/python/Logic/Random.html",
+    "keywords": [
+      "随机",
+      "抽样",
+      "概率",
+      "random",
+      "randint",
+      "randrange",
+      "uniform",
+      "choice",
+      "getrandbits"
+    ]
+  },
+  {
+    "id": "operators",
+    "title": "Operators · 运算符",
+    "file": "operators.md",
+    "group": "python",
+    "parent": "logic",
+    "source": "https://api.vex.com/aim/home/python/Logic/Operators.html",
+    "keywords": [
+      "运算",
+      "比较",
+      "布尔",
+      "切片",
+      "字典",
+      "位运算",
+      "operators",
+      "and",
+      "or",
+      "not",
+      "is",
+      "in"
+    ]
+  },
+  {
+    "id": "comments",
+    "title": "Comments · 注释",
+    "file": "comments.md",
+    "group": "python",
+    "parent": "logic",
+    "source": "https://api.vex.com/aim/home/python/Logic/Comments.html",
+    "keywords": [
+      "注释",
+      "说明",
+      "文档字符串",
+      "comments",
+      "docstring"
+    ]
+  },
+  {
+    "id": "colors",
+    "title": "Custom Colors · 自定义颜色",
+    "file": "colors.md",
+    "group": "python",
+    "parent": "logic",
+    "source": "https://api.vex.com/aim/home/python/Logic/Color_objects.html",
+    "keywords": [
+      "颜色",
+      "配色",
+      "自定义",
+      "rgb",
+      "hsv",
+      "color",
+      "web"
+    ]
+  },
+  {
+    "id": "formatting",
+    "title": "String Formatting · 字符串格式",
+    "file": "formatting.md",
+    "group": "python",
+    "parent": "logic",
+    "source": "https://api.vex.com/aim/home/python/Logic/Custom_formatting.html",
+    "keywords": [
+      "格式",
+      "格式化",
+      "字符串",
+      "小数",
+      "百分比",
+      "format",
+      "formatting",
+      "f-string",
+      "upper",
+      "lower",
+      "startswith",
+      "endswith"
+    ]
+  },
+  {
+    "id": "threads",
+    "title": "Threads · 线程",
+    "file": "threads.md",
+    "group": "python",
+    "parent": "logic",
+    "source": "https://api.vex.com/aim/home/python/Logic/Threads.html",
+    "keywords": [
+      "线程",
+      "并行",
+      "并发",
+      "thread",
+      "threads",
+      "stop"
+    ]
+  },
+  {
+    "id": "micropython",
+    "title": "MicroPython Libraries · 库",
+    "file": "micropython.md",
+    "group": "python",
+    "source": "https://api.vex.com/aim/home/python/Micropython_libraries.html",
+    "keywords": [
+      "micropython",
+      "库",
+      "依赖",
+      "asyncio",
+      "binascii",
+      "cmath",
+      "errno",
+      "gc",
+      "hashlib",
+      "heapq",
+      "io",
+      "json",
+      "os",
+      "re",
+      "select",
+      "struct",
+      "sys"
+    ]
+  },
+  {
+    "id": "exchange",
+    "title": "项目导入、导出与下载",
+    "keywords": [
+      "导入",
+      "导出",
+      "下载",
+      "格式",
+      "蓝牙",
+      "连接",
+      "同步",
+      "usb",
+      "download"
+    ],
+    "file": "exchange.md",
+    "group": "guide"
+  },
+  {
+    "id": "classroom",
+    "title": "足球课堂与测试方法",
+    "keywords": [
+      "课程",
+      "足球",
+      "比赛",
+      "策略",
+      "状态",
+      "测试",
+      "排错",
+      "调试"
+    ],
+    "file": "classroom.md",
+    "group": "guide"
+  }
+]

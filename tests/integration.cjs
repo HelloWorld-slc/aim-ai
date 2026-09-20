@@ -1,0 +1,192 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs/promises');
+const path = require('node:path');
+const http = require('node:http');
+const vscode = require('vscode');
+
+exports.run = async function () {
+  const extensionRoot = path.resolve(__dirname, '..');
+  const results = [];
+  const report = (name) => results.push({ name, passed: true });
+  let server;
+  let readReferenceTest = false;
+  let referenceReply;
+  let referenceIndex;
+  let streamMode = '';
+  try {
+    const ext = vscode.extensions.getExtension('aim-ai-local.aim-ai');
+    assert.ok(ext, 'development extension registered');
+    const api = await ext.activate();
+    assert.ok(api.assistant); report('extension activation');
+    if (process.env.AIM_AI_HISTORY_VERIFY === '1') {
+      const expected = JSON.parse(await fs.readFile(path.join(extensionRoot, '.vscode-test', 'restart-expected.json'), 'utf8'));
+      const restored = api.assistant.conversationState();
+      assert.equal(restored.activeId, expected.id);
+      assert.equal(restored.current.messages.length, expected.count);
+      assert.ok(restored.current.messages.some(m => m.text.includes('边长')));
+      assert.equal(api.assistant.proposal, undefined);
+      assert.equal(api.assistant.thinkingState().value, 'high');
+      assert.ok(restored.current.messages.some(m => m.model === 'deepseek-v4.1-flash' && m.thinking?.includes('核对单位')));
+      await fs.writeFile(path.join(extensionRoot, 'test-results', 'restart.json'), JSON.stringify({ at: new Date().toISOString(), passed: true, messages: expected.count, pendingProposalRestored: false }, null, 2));
+      return;
+    }
+    await api.assistant.clear();
+    const registered = await vscode.commands.getCommands(true);
+    for (const name of ['open', 'configure', 'importProject', 'exportProject', 'check', 'restore', 'stop']) assert.ok(registered.includes(`aimAI.${name}`));
+    report('commands registered');
+    const project = await api.projects.current();
+    const doc = await vscode.workspace.openTextDocument(project.main);
+    await vscode.window.showTextDocument(doc);
+    const initial = doc.getText();
+    const messages = [];
+    const originalEmitter = api.assistant.onMessage;
+    api.assistant.onMessage = (type, data) => messages.push({ type, data });
+    assert.equal(await api.assistant.check(), true); report('syntax checker in extension host');
+
+    const config = vscode.workspace.getConfiguration('aimAI');
+    await config.update('provider', 'custom', vscode.ConfigurationTarget.Global);
+    await config.update('protocol', 'chat-completions', vscode.ConfigurationTarget.Global);
+    await api.assistant.setThinking('high');
+    assert.equal((await api.assistant.configuration().catch(() => ({ thinkingEffort: 'not-configured' }))).thinkingEffort === 'not-configured' || api.assistant.thinkingState().value === 'high', true);
+    await assert.rejects(() => api.assistant.setThinking('invalid-option'), /不支持/);
+    server = http.createServer(async (req, res) => {
+      let body = ''; for await (const chunk of req) body += chunk;
+      const input = JSON.parse(body);
+      assert.equal(input.reasoning_effort, 'high');
+      if (input.messages[0].content.includes('connection test')) {
+        res.end(JSON.stringify({ choices: [{ message: { content: 'OK' } }] })); return;
+      }
+      if (streamMode) {
+        assert.equal(input.stream, true);
+        res.writeHead(200, { 'Content-Type': 'text/event-stream' });
+        const frame = (delta, finish_reason = null) => `data: ${JSON.stringify({ model: 'deepseek-v4.1-flash', choices: [{ index: 0, delta, finish_reason }] })}\n\n`;
+        res.write(frame({ reasoning_content: '先核对单位，再检查边长。' }));
+        if (streamMode === 'cutoff') { res.end(frame({ content: '这是一段未完成的回答' })); return; }
+        const current = input.messages.at(-1).content.match(/<current_source>\n([\s\S]*)\n<\/current_source>/)[1];
+        const text = streamMode === 'code' ? `## 建议\n\n\`\`\`python\n${current.replace('SIDE_LENGTH_MM = 100', 'SIDE_LENGTH_MM = 160')}\`\`\`` : '## 已检查\n\n**边长**没有修改。';
+        setTimeout(() => res.end(frame({ content: text }, 'stop') + 'data: [DONE]\n\n'), 110);
+        return;
+      }
+      if (readReferenceTest) {
+        referenceIndex = input.messages[0].content;
+        if (input.messages.at(-1).role === 'tool') {
+          referenceReply = input.messages.at(-1).content;
+          res.end(JSON.stringify({ choices: [{ message: { content: '已读取计时器资料。' } }] }));
+        } else {
+          res.end(JSON.stringify({ choices: [{ message: { content: null, tool_calls: [{ id: 'ref-call', type: 'function', function: { name: 'read_reference', arguments: JSON.stringify({ id: 'timer' }) } }] } }] }));
+        }
+        return;
+      }
+      assert.ok(input.messages[0].content.includes('AIM'));
+      const current = input.messages.at(-1).content.match(/<current_source>\n([\s\S]*)\n<\/current_source>/)[1];
+      const source = current.replace('SIDE_LENGTH_MM = 100', 'SIDE_LENGTH_MM = 140');
+      res.end(JSON.stringify({ choices: [{ message: { content: null, tool_calls: [{ id: 'test-call', type: 'function', function: { name: 'propose_program', arguments: JSON.stringify({ source, explanation: '把测试边长改为140毫米；未运行机器人。' }) } }] } }], usage: { total_tokens: 42 } }));
+    });
+    await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+    await config.update('baseUrl', `http://127.0.0.1:${server.address().port}/v1`, vscode.ConfigurationTarget.Global);
+    await config.update('model', 'local-fixture', vscode.ConfigurationTarget.Global);
+    await config.update('streamResponses', true, vscode.ConfigurationTarget.Global);
+    assert.equal((await api.assistant.configuration()).thinkingEffort, 'high'); report('thinking selection saved and passed to API, invalid option rejected');
+    await api.assistant.test(); report('connection test against local mock only');
+
+    await api.assistant.send('把正方形边长改为140毫米');
+    assert.ok(api.assistant.proposal); assert.equal(doc.getText(), initial); report('AI proposal does not modify source');
+    assert.deepEqual(api.assistant.proposal.changes, { added: 1, removed: 1 });
+    const autoDiff = vscode.window.tabGroups.all.flatMap(g => g.tabs).find(t => t.input instanceof vscode.TabInputTextDiff && t.input.modified.scheme === 'aim-ai-preview');
+    assert.ok(autoDiff, 'automatic code review opens before clicking preview');
+    assert.equal((await vscode.workspace.openTextDocument(autoDiff.input.original)).getText(), initial);
+    report('code review opens automatically with immutable old/new snapshots and line counts');
+    await api.assistant.preview(); report('native diff editor opens');
+    await api.assistant.apply();
+    assert.ok(doc.getText().includes('SIDE_LENGTH_MM = 140')); assert.equal(doc.isDirty, true); report('WorkspaceEdit updates unsaved buffer');
+    await api.assistant.restore(); assert.equal(doc.getText(), initial); report('restore previous version');
+
+    await api.assistant.send('再次修改边长');
+    const edit = new vscode.WorkspaceEdit(); edit.insert(doc.uri, doc.positionAt(doc.getText().length), '\n# student edit\n');
+    await vscode.workspace.applyEdit(edit);
+    await assert.rejects(() => api.assistant.apply(), /发生修改/); report('concurrent student edit is preserved');
+    assert.ok(doc.getText().includes('# student edit'));
+    await doc.save();
+    await api.exportProject(true);
+    const exported = JSON.parse(await fs.readFile(path.join(project.root, 'dist', `${project.name}.aimpython`), 'utf8'));
+    assert.equal(exported.textContent, doc.getText()); report('export uses latest editor source');
+    assert.equal(exported.slot, project.slot - 1); report('official project slot conversion');
+    await config.update('autoExport', true, vscode.ConfigurationTarget.Workspace);
+    for (let i = 0; i < 2; i++) {
+      const savedEdit = new vscode.WorkspaceEdit();
+      savedEdit.insert(doc.uri, doc.positionAt(doc.getText().length), `# saved edit ${i}\n`);
+      await vscode.workspace.applyEdit(savedEdit); await doc.save();
+    }
+    const exportFile = path.join(project.root, 'dist', `${project.name}.aimpython`);
+    let latest;
+    for (let i = 0; i < 50; i++) {
+      latest = JSON.parse(await fs.readFile(exportFile, 'utf8')).textContent;
+      if (latest === doc.getText()) break;
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    assert.equal(latest, doc.getText()); report('consecutive saves auto-export newest source');
+    await config.update('autoExport', false, vscode.ConfigurationTarget.Workspace);
+    await vscode.commands.executeCommand('aimAI.open'); report('sidebar webview created');
+    const context = await api.knowledge.context('足球视觉'); assert.ok(context.ids.includes('vision')); report('bundled reference retrieval');
+    const catalog = api.knowledge.catalog();
+    assert.equal(catalog.length, 31); assert.equal(catalog.filter(t => t.parent === 'logic').length, 12);
+    assert.ok(catalog.find(t => t.id === 'screen').searchText.includes('draw_rectangle'));
+    report('complete Python catalog available in extension host');
+    readReferenceTest = true;
+    const beforeReference = doc.getText();
+    await api.assistant.send('读取 Timer 资料，解释延迟回调，不修改程序');
+    assert.ok(referenceIndex.includes('"id":"threads"'));
+    assert.ok(referenceReply.includes('Logic/Timer.html'));
+    assert.ok(referenceReply.includes('timer.event'));
+    assert.ok(messages.some(m => m.type === 'reference' && m.data === 'timer'));
+    assert.equal(doc.getText(), beforeReference);
+    report('model tool can read a new Logic reference without editing code');
+    streamMode = 'text';
+    await api.assistant.send('流式解释边长，不修改程序');
+    const received = api.assistant.conversationState().current.messages.at(-1);
+    assert.equal(received.model, 'deepseek-v4.1-flash'); assert.match(received.thinking, /核对单位/); assert.equal(received.status, 'complete');
+    assert.ok(messages.some(m => m.type === 'chatMessage' && m.data.status === 'streaming' && m.data.thinking?.includes('核对单位')));
+    report('streamed thinking and answer arrive live and persist with actual model name');
+    streamMode = 'code'; await api.assistant.send('请在代码块给出完整程序');
+    assert.ok(api.assistant.proposal); assert.equal(doc.getText(), beforeReference);
+    assert.deepEqual(api.assistant.proposal.changes, { added: 1, removed: 1 });
+    report('full Python code fence triggers checked review without modifying source');
+    streamMode = 'cutoff'; await assert.rejects(() => api.assistant.send('模拟中途断开'), /提前结束/);
+    assert.equal(api.assistant.proposal, undefined);
+    assert.ok(api.assistant.conversationState().current.messages.some(m => m.status === 'interrupted' && m.text.includes('未完成')));
+    report('stream interruption preserves partial content and offers no executable proposal');
+    streamMode = '';
+    const firstChat = api.assistant.conversationState().current;
+    assert.ok(firstChat.messages.some(m => m.text.includes('建议程序')));
+    const countBeforeNew = api.assistant.conversations.list().length;
+    await api.assistant.clear();
+    assert.equal(api.assistant.conversationState().activeId, undefined);
+    assert.equal(api.assistant.conversations.list().length, countBeforeNew);
+    await api.assistant.send('这是另一个关于计时器的新对话');
+    assert.notEqual(api.assistant.conversationState().activeId, firstChat.id);
+    await api.assistant.openConversation(firstChat.id);
+    assert.equal(api.assistant.proposal, undefined);
+    await api.assistant.send('继续上次的边长问题，读取计时器参考');
+    const resumed = api.assistant.conversationState().current;
+    assert.ok(resumed.messages.length > firstChat.messages.length);
+    assert.equal(doc.getText(), beforeReference);
+    report('new chat preserves old conversation and reopening permits continuation');
+    await fs.writeFile(path.join(extensionRoot, '.vscode-test', 'restart-expected.json'), JSON.stringify({ id: resumed.id, count: resumed.messages.length }));
+    await fs.mkdir(path.join(extensionRoot, 'test-results'), { recursive: true });
+    await fs.writeFile(path.join(extensionRoot, 'test-results', 'integration.json'), JSON.stringify({ at: new Date().toISOString(), results, hardware: 'not tested', remoteModel: 'not tested' }, null, 2));
+    if (process.env.AIM_AI_VISUAL === '1') {
+      api.assistant.onMessage = originalEmitter;
+      await api.assistant.clear();
+      await config.update('baseUrl', '', vscode.ConfigurationTarget.Global);
+      await config.update('model', '', vscode.ConfigurationTarget.Global);
+      await new Promise(resolve => setTimeout(resolve, 180000));
+    }
+  } catch (error) {
+    await fs.mkdir(path.join(extensionRoot, 'test-results'), { recursive: true });
+    await fs.writeFile(path.join(extensionRoot, 'test-results', 'integration.json'), JSON.stringify({ results, failed: String(error), stack: error.stack }, null, 2));
+    throw error;
+  } finally {
+    if (server) { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); }
+    await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+  }
+};

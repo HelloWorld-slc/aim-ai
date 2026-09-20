@@ -1,0 +1,58 @@
+[
+  {
+    "id": "deepseek",
+    "file": "deepseek.ico",
+    "homepage": "https://www.deepseek.com/",
+    "url": "https://www.deepseek.com/favicon.ico",
+    "retrievedAt": "2026-09-20",
+    "sha256": "30a4420e6e4dcb17fd7de560c5004346c2bc8cd971d2d5f5ee15326603e51321"
+  },
+  {
+    "id": "qwen",
+    "file": "qwen.png",
+    "homepage": "https://qwen.ai/",
+    "url": "https://img.alicdn.com/imgextra/i4/O1CN01OXv3EM1FN8t9W4P79_!!6000000000474-2-tps-80-80.png",
+    "retrievedAt": "2026-09-20",
+    "sha256": "cd9390bc4209c319121d111f3a1f535b3c7dd909b8f860d41acc9744138d58df"
+  },
+  {
+    "id": "kimi",
+    "file": "kimi.png",
+    "homepage": "https://www.kimi.com/",
+    "url": "https://www.kimi.com/pwa-192.png",
+    "retrievedAt": "2026-09-20",
+    "sha256": "6c14f9c3062e953b3ed57ae3e19db931c1c1bba38d4d8d55550544f31d55e469"
+  },
+  {
+    "id": "glm",
+    "file": "glm.ico",
+    "homepage": "https://chatglm.cn/",
+    "url": "https://chatglm.cn/favicon.ico",
+    "retrievedAt": "2026-09-20",
+    "sha256": "94e48956654f0b02d7a113628cdea50819579c6bccecec8888928f321c0f997d"
+  },
+  {
+    "id": "openai",
+    "file": "openai.png",
+    "homepage": "https://github.com/openai",
+    "url": "https://avatars.githubusercontent.com/u/14957082?v=4",
+    "retrievedAt": "2026-09-20",
+    "sha256": "6025a4347a8eaed17e31eaebf7834e33ec4af26cc7f59be586ac59ba5157fa1c"
+  },
+  {
+    "id": "claude",
+    "file": "claude.png",
+    "homepage": "https://claude.com/",
+    "url": "https://assets.claude.com/95a868946ac8a31e5ff832e2899f294aa368b836.png?w=32&h=32",
+    "retrievedAt": "2026-09-20",
+    "sha256": "4004381309500f25e49a1ae639912ce307ea81da74cc383954a1ac8b9d343fe6"
+  },
+  {
+    "id": "gemini",
+    "file": "gemini.png",
+    "homepage": "https://github.com/google-gemini/cookbook",
+    "url": "https://github.com/google-gemini/cookbook/blob/main/quickstarts/file-api/sample_data/gemini_logo.png",
+    "retrievedAt": "2026-09-20",
+    "sha256": "cb990220153c1c490efdc7f2f16b1d9ed0c61872c440487212fb1bd5be387a2f"
+  }
+]

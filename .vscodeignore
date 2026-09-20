@@ -1,0 +1,14 @@
+node_modules/**
+.research/**
+src/**
+tests/**
+out/**
+.vscode-test/**
+test-results/**
+*.vsix
+*.log
+tsconfig.json
+esbuild.mjs
+package-lock.json
+dist/*.map
+media/main.js
