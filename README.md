@@ -9,7 +9,7 @@ AI-assisted VEX AIM coding · Built for the classroom
 **简体中文** · [English](README.en.md)
 
 [![CI](https://github.com/HelloWorld-slc/aim-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/HelloWorld-slc/aim-ai/actions/workflows/ci.yml)
-[![Preview](https://img.shields.io/badge/preview-0.5.0-48c9b0)](https://github.com/HelloWorld-slc/aim-ai/releases/tag/v0.5.0)
+[![Preview](https://img.shields.io/badge/preview-0.5.1-48c9b0)](https://github.com/HelloWorld-slc/aim-ai/releases/tag/v0.5.1)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![VS Code](https://img.shields.io/badge/VS_Code-1.96%2B-007ACC)](https://code.visualstudio.com/)
 
@@ -21,7 +21,7 @@ AI-assisted VEX AIM coding · Built for the classroom
 
 AIM AI 把模型对话、官方 API 速查、代码差异、项目导出和机器人调试放进同一个侧栏。学生描述目标，AI 提出代码，学生查看修改并测试；教师可以复用项目模板组织课堂活动。项目起源于《绿茵智控：AI 足球机器人挑战项目》，也适用于正方形行走、视觉识别和运动控制入门。
 
-> **当前为 0.5.0 预览版。** 编辑与项目互通已验证；MCP 流程已通过模拟测试，Wi-Fi 连接和状态读取已在一台实机验证；新增自主批量运动的物理效果、下载仍待现场验收。本项目是独立开源工具，与 VEX Robotics 无隶属或授权关系。
+> **当前为 0.5.1 预览版，增加图像识别知识库。** 编辑与项目互通已验证；MCP 流程已通过模拟测试，Wi-Fi 连接和状态读取已在一台实机验证；自主批量运动的物理效果、下载仍待现场验收。本项目是独立开源工具，与 VEX Robotics 无隶属或授权关系。
 
 ## 能做什么
 
@@ -31,7 +31,7 @@ AIM AI 把模型对话、官方 API 速查、代码差异、项目导出和机�
 | 看清修改 | 右侧原生差异视图显示逐行增删；点击应用才修改代码，支持恢复 |
 | 流式回答 | Markdown、表格、代码高亮、实际模型名；显示接口公开返回的思考内容 |
 | 保存上下文 | 对话自动保存在本机；新对话保留历史，支持搜索、继续、重命名和删除 |
-| 查阅 AIM API | 32 篇中文速查，覆盖 Python 全部 15 类与 Logic 12 个子页 |
+| 查阅 AIM 资料 | 44 篇中文资料，覆盖 Python 全部 15 类、Logic 12 个子页及 12 篇图像识别专题 |
 | 项目互通 | 创建 / 导入 / 导出 `.aimpython`；手动导出后自动用 VEXcode AIM 打开 |
 | 机器人调试 | 按需 Wi-Fi 连接、可选字段读取、自主批量测试、遥测误差比较 |
 | 自选模型 | DeepSeek、Qwen、Kimi、GLM、OpenAI、Claude、Gemini 预设及自定义接口 |
@@ -48,9 +48,11 @@ AIM AI 把模型对话、官方 API 速查、代码差异、项目导出和机�
 
 ### 1. 安装
 
-从 [GitHub Releases](https://github.com/HelloWorld-slc/aim-ai/releases) 下载 `aim-ai-0.5.0.vsix`。在 VS Code 扩展页选择 **⋯ → 从 VSIX 安装**，安装后执行 **Developer: Reload Window**，打开侧栏的 **AI** 图标。
+从 [GitHub Releases](https://github.com/HelloWorld-slc/aim-ai/releases) 下载 `aim-ai-0.5.1.vsix`。在 VS Code 扩展页选择 **⋯ → 从 VSIX 安装**，安装后执行 **Developer: Reload Window**，打开侧栏的 **AI** 图标。
 
 当前通过 GitHub 分发，尚未上架扩展市场。
+
+0.5.1 增加「项目与课堂 → 图像识别」目录。内容包括数据读取、视野、光照与表面、漏检与误识别、AprilTag、颜色配置、找球射门、条件循环、训练边界和测试任务卡。根据 17 个官方页面整理中文摘要及项目建议；每篇有来源和日期，原始视频与任务卡通过官方入口查看。AI 可按关键词检索，也可调用 `read_reference` 读取全文；参见 [视觉资料导航](resources/knowledge/vision-guide.md)。这项更新不更换机器人的视觉模型。
 
 ### 2. 打开 AIM 项目
 

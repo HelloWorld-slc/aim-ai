@@ -7,7 +7,7 @@
 [简体中文](README.md) · **English**
 
 [![CI](https://github.com/HelloWorld-slc/aim-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/HelloWorld-slc/aim-ai/actions/workflows/ci.yml)
-[![Preview](https://img.shields.io/badge/preview-0.5.0-48c9b0)](https://github.com/HelloWorld-slc/aim-ai/releases/tag/v0.5.0)
+[![Preview](https://img.shields.io/badge/preview-0.5.1-48c9b0)](https://github.com/HelloWorld-slc/aim-ai/releases/tag/v0.5.1)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![VS Code](https://img.shields.io/badge/VS_Code-1.96%2B-007ACC)](https://code.visualstudio.com/)
 
@@ -19,7 +19,9 @@
 
 AIM AI brings model chat, AIM API references, code review, project exchange and robot debugging into one VS Code sidebar. Students describe a goal, review the proposed changes and test the result. The project started with a high-school robot football course and also supports introductory motion and vision activities.
 
-> **0.5.0 is a preview release.** Editing and project exchange have been tested. Wi-Fi connection and status reading have worked with one physical AIM robot. Autonomous batch motion is covered by simulation and extension integration tests; physical motion accuracy, downloading and a separate Windows 10 installation still need validation. This is an independent project, not an official VEX Robotics product.
+> **0.5.1 is a preview release with a vision knowledge update.** Editing and project exchange have been tested. Wi-Fi connection and status reading have worked with one physical AIM robot. Autonomous batch motion is covered by simulation and extension integration tests; physical motion accuracy, downloading and a separate Windows 10 installation still need validation. This is an independent project, not an official VEX Robotics product.
+
+This update adds 12 Chinese vision topics based on 17 official VEX pages: observation, data handling, geometry, environment, recognition errors, AprilTags, color configuration, football tasks, decisions, training limits and testing. Summaries are available offline and through `read_reference`; original task cards and videos remain linked at their official sources. See the [vision guide](resources/knowledge/vision-guide.md).
 
 ## Features
 
@@ -29,7 +31,7 @@ AIM AI brings model chat, AIM API references, code review, project exchange and 
 | Code review | Native side-by-side diff, line counts, explicit apply and restoration |
 | Streaming chat | Markdown, syntax highlighting, actual model ID and reasoning text exposed by the provider |
 | Local history | Persistent conversations, search, resume, rename and delete |
-| AIM references | 32 Chinese reference pages, including every Python category and an MCP parameter guide |
+| AIM references | 44 Chinese reference pages, including every Python category, an MCP parameter guide and 12 vision topics |
 | Project exchange | Create, import and export `.aimpython`; open exports in VEXcode AIM |
 | Robot debugging | On-demand Wi-Fi connection, selected telemetry fields and bounded batch tests |
 | Model choice | DeepSeek, Qwen, Kimi, GLM, OpenAI, Claude, Gemini and custom endpoints |
@@ -44,7 +46,7 @@ Screenshots use isolated UI fixtures. Model names, answers and robot data shown 
 
 ## Quick start
 
-1. Download `aim-ai-0.5.0.vsix` from [Releases](https://github.com/HelloWorld-slc/aim-ai/releases). In VS Code, open Extensions → **⋯ → Install from VSIX**, then run **Developer: Reload Window**. The extension is not currently distributed through the Marketplace.
+1. Download `aim-ai-0.5.1.vsix` from [Releases](https://github.com/HelloWorld-slc/aim-ai/releases). In VS Code, open Extensions → **⋯ → Install from VSIX**, then run **Developer: Reload Window**. The extension is not currently distributed through the Marketplace.
 2. Open an AIM Python **project folder**, containing `.vscode/vex_project_settings.json`. Opening a standalone `.py` file is not enough. Creating or importing a project requires the AIM Python SDK previously installed by the official VEX VS Code extension.
 3. Open the **模型 / Models** tab. Choose a provider, confirm the endpoint and model ID, enter your API key and test the connection. Availability and pricing depend on your provider account.
 4. Describe your task. Review the diff, click **应用修改 / Apply**, check the program and save. Syntax checks do not establish physical correctness.

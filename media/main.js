@@ -85,7 +85,7 @@ function renderTopics() {
     return t.searchText.includes(term) || (name.length > 0 && t.searchText.includes(name)) || (name.includes('.') && t.searchText.includes(name.slice(name.lastIndexOf('.') + 1)));
   })).map(t => t.id));
   const container = el('topics'); container.replaceChildren();
-  el('topic-count').textContent = terms.length ? `找到 ${matches.size} / ${topics.length} 篇资料` : `共 ${topics.length} 篇资料 · 可展开 Logic 子项`;
+  el('topic-count').textContent = terms.length ? `找到 ${matches.size} / ${topics.length} 篇资料` : `共 ${topics.length} 篇资料 · 可展开 Logic 与图像识别子项`;
   for (const [group, label] of [['python', 'Python API'], ['guide', '项目与课堂']]) {
     const section = document.createElement('section'); section.className = 'topic-group';
     const heading = document.createElement('h3'); heading.textContent = label; section.append(heading);

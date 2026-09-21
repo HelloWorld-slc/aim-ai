@@ -98,13 +98,16 @@ const { PRESETS, thinkingOptions } = require('../src/core/presets.ts');
     await page.locator('nav [data-tab="project"]').click(); await page.locator('#open-after-export').uncheck();
     assert.ok(await page.evaluate(() => window.sent.some(m => m.type === 'openAfterExport' && m.value === false)));
     await page.locator('[data-tab="docs"]').click();
-    await page.waitForFunction(() => document.getElementById('topic-count').textContent.includes('32'));
-    assert.equal(await page.locator('.topic:visible').count(), 20);
-    await page.locator('.topic-branch summary').click();
+    await page.waitForFunction(() => document.getElementById('topic-count').textContent.includes('44'));
+    assert.equal(await page.locator('.topic:visible').count(), 21);
+    await page.locator('.topic-branch summary').filter({ hasText: 'Logic' }).click();
     await page.locator('[data-topic="timer"]').waitFor({ state: 'visible' });
-    assert.equal(await page.locator('.topic:visible').count(), 32);
+    assert.equal(await page.locator('.topic:visible').count(), 33);
+    await page.locator('.topic-branch summary').filter({ hasText: '图像识别' }).click();
+    await page.locator('[data-topic="vision-errors"]').waitFor({ state: 'visible' });
+    assert.equal(await page.locator('.topic:visible').count(), 44);
     const search = page.locator('#topic-search');
-    for (const [query, id] of [['线程', 'threads'], ['draw_rectangle', 'screen'], ['robot.screen.draw_rectangle()', 'screen'], ['timer.event', 'timer']]) {
+    for (const [query, id] of [['线程', 'threads'], ['draw_rectangle', 'screen'], ['robot.screen.draw_rectangle()', 'screen'], ['误识别', 'vision-errors'], ['AprilTag', 'vision-apriltags'], ['颜色签名', 'vision-colors'], ['timer.event', 'timer']]) {
       await search.fill(query); await page.locator(`[data-topic="${id}"]`).waitFor({ state: 'visible' });
     }
     await page.locator('[data-topic="timer"]').click();
@@ -115,7 +118,7 @@ const { PRESETS, thinkingOptions } = require('../src/core/presets.ts');
     assert.equal(await page.locator('.topic').count(), 0);
     assert.match(await page.locator('#topics').textContent(), /没有找到/);
     await search.fill('');
-    assert.equal(await page.locator('.topic:visible').count(), 32);
+    assert.equal(await page.locator('.topic:visible').count(), 44);
     await fs.mkdir(path.join(root, 'test-results'), { recursive: true });
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({ path: path.join(root, 'test-results', 'references.png'), fullPage: true });
@@ -167,7 +170,7 @@ const { PRESETS, thinkingOptions } = require('../src/core/presets.ts');
     assert.match(await page.locator('.message-status').last().textContent(), /已中断/);
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
     assert.deepEqual(errors, []);
-    await fs.writeFile(path.join(root, 'test-results', 'webview.json'), JSON.stringify({ at: new Date().toISOString(), passed: true, checks: ['Markdown headings/tables/highlight/copy/links', 'script/command/image injection blocked', 'thinking and actual model', 'stream upsert and interrupted status', 'diff counts', 'seven official icons loaded', 'provider configuration', 'thinking selection and busy lock', 'history search/open/rename/delete/new chat', 'per-chat draft restoration', 'export open toggle', '32 entries render', 'Logic expansion', 'Chinese and API search', 'reference click', 'search survives state refresh', 'empty results', 'expansion restored', 'robot saved configuration and auto-connect toggle', 'simulated data label and explicit test execution', 'robot busy state and available stop', 'all six tabs at 240px', 'no script errors'] }, null, 2));
+    await fs.writeFile(path.join(root, 'test-results', 'webview.json'), JSON.stringify({ at: new Date().toISOString(), passed: true, checks: ['Markdown headings/tables/highlight/copy/links', 'script/command/image injection blocked', 'thinking and actual model', 'stream upsert and interrupted status', 'diff counts', 'seven official icons loaded', 'provider configuration', 'thinking selection and busy lock', 'history search/open/rename/delete/new chat', 'per-chat draft restoration', 'export open toggle', '44 entries render', 'Logic and vision expansion', 'Chinese and API search', 'reference click', 'search survives state refresh', 'empty results', 'expansion restored', 'robot saved configuration and auto-connect toggle', 'simulated data label and explicit test execution', 'robot busy state and available stop', 'all six tabs at 240px', 'no script errors'] }, null, 2));
     console.log('Webview smoke test passed.');
   } finally {
     if (browser) await browser.close();

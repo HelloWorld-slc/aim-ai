@@ -8,7 +8,7 @@ VS Code 侧栏
   → Conversations：工作区对话、原子持久化、历史摘录
   → Provider：服务预设、协议与思考参数适配
   → Application：Windows 官方应用启动，不经 shell
-  → Knowledge：32 篇本地资料、分类层级、关键词与方法名检索、来源
+  → Knowledge：44 篇本地资料、分类层级、关键词与方法名检索、来源
   → Projects：官方项目配置、单文件源码、.aimpython 转换
   → Validation：Python AST + VS Code diagnostics
   → Devices：已安装官方 VEX 扩展的有限命令桥接
@@ -26,6 +26,8 @@ AI 可调用 `read_reference`、`get_diagnostics`、`propose_program`；启用�
 项目文件索引仅查找 `.vscode/vex_project_settings.json`，主程序路径必须位于项目内。导出保存元数据，源码检查期间发生变化会拒绝此次导出。AI 修改前校验原文未发生变化，并再次检查保存恢复副本期间的并发编辑。
 
 ## 为什么没有直接套用大型 AI 扩展
+
+0.5.1 新增 `vision-guide` 和 11 个图像识别子页，沿用现有关键词检索、`read_reference` 和分组界面。`vision-sources.json` 记录 17 个已查阅官方页面及原始任务卡入口，供来源审计；运行时资料正文来自索引里的 Markdown，不抓取远程网页。课程摘要与本项目建议分开，保留视频/附件未逐项审阅及 SDK/文档差异说明。不增加嵌入服务或改变原有 4 篇/16,000 字符上下文上限。
 
 首版只需单文件编程、少量受控工具和 AIM 文件互通。复用 VS Code 的编辑、诊断、凭据功能及官方 VEX 扩展，比维护一个大型通用 AI 扩展分支更直接。模型接口用平台自带 fetch；资料按关键词检索，不额外部署向量数据库。开源不意味着运行模型免费，主要降低维护和重复开发成本。
 

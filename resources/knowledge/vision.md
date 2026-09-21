@@ -1,6 +1,6 @@
 # AI Vision · 视觉
 
-AIM AI 整理，2026-09-20。中文速查与接口索引；完整参数和示例见[官方文档](https://api.vex.com/aim/home/python/AI_Vision.html)。
+AIM AI 整理，2026-09-21。中文速查与接口索引；完整参数和示例见[官方文档](https://api.vex.com/aim/home/python/AI_Vision.html)。视觉实验、识别排查和足球任务见 [图像识别导航](vision-guide.md)（资料 id：`vision-guide`）。
 
 ## 接口索引
 
@@ -19,7 +19,8 @@ AIM AI 整理，2026-09-20。中文速查与接口索引；完整参数和示例
 
 ## 编程注意
 
-先检查元组非空，再访问第 0 项并检查 `exists`；不要照搬直接索引的示例。像素尺寸不是毫米距离。持球判断优先用官网写法 `robot.has_sports_ball()`；本机 SDK 另有 vision 对象别名。
+先检查元组非空，再访问第 0 项并检查 `exists`；不要照搬直接索引的示例。像素尺寸不是毫米距离。持球判断优先用官网写法 `robot.has_sports_ball()`；本机 SDK 另有 vision 对象别名。多目标、采样和空结果示例见 `vision-data`。
+
+AprilTag 范围存在官方文档内部差异：`tag_detection` 段写 0～36，过滤参数和 `.id` 段写 0～37，本机 SDK 声明有 TAG37。优先使用套件 0～4；其他编号结合固件实测，详见 `vision-apriltags`。不要仅凭常量存在保证识别成功。
 
 颜色签名 index 为 1～7；颜色码 index 为 1～8。官网颜色码参数展示和说明数量不完全一致，额外颜色数量须以本机 SDK/固件实测为准；先用两个颜色。
-

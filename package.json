@@ -2,7 +2,7 @@
   "name": "aim-ai",
   "displayName": "AIM AI",
   "description": "VEX AIM classroom coding: AI assistance, local references, project exchange and VEX integration.",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "publisher": "aim-ai-local",
   "license": "MIT",
   "engines": {

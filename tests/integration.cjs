@@ -10,6 +10,7 @@ exports.run = async function () {
   const report = (name) => results.push({ name, passed: true });
   let server;
   let readReferenceTest = false;
+  let referenceId = 'timer';
   let referenceReply;
   let referenceIndex;
   let streamMode = '';
@@ -92,9 +93,9 @@ exports.run = async function () {
         referenceIndex = input.messages[0].content;
         if (input.messages.at(-1).role === 'tool') {
           referenceReply = input.messages.at(-1).content;
-          res.end(JSON.stringify({ choices: [{ message: { content: '已读取计时器资料。' } }] }));
+          res.end(JSON.stringify({ choices: [{ message: { content: '已读取所需资料。' } }] }));
         } else {
-          res.end(JSON.stringify({ choices: [{ message: { content: null, tool_calls: [{ id: 'ref-call', type: 'function', function: { name: 'read_reference', arguments: JSON.stringify({ id: 'timer' }) } }] } }] }));
+          res.end(JSON.stringify({ choices: [{ message: { content: null, tool_calls: [{ id: 'ref-call', type: 'function', function: { name: 'read_reference', arguments: JSON.stringify({ id: referenceId }) } }] } }] }));
         }
         return;
       }
@@ -150,7 +151,9 @@ exports.run = async function () {
     await vscode.commands.executeCommand('aimAI.open'); report('sidebar webview created');
     const context = await api.knowledge.context('足球视觉'); assert.ok(context.ids.includes('vision')); report('bundled reference retrieval');
     const catalog = api.knowledge.catalog();
-    assert.equal(catalog.length, 32); assert.equal(catalog.filter(t => t.parent === 'logic').length, 12);
+    assert.equal(catalog.length, 44); assert.equal(catalog.filter(t => t.parent === 'logic').length, 12);
+    assert.equal(catalog.filter(t => t.parent === 'vision-guide').length, 11);
+    assert.ok((await api.knowledge.context('光照和地面反光')).ids.includes('vision-environment'));
     assert.ok(catalog.find(t => t.id === 'screen').searchText.includes('draw_rectangle'));
     report('complete Python catalog available in extension host');
     readReferenceTest = true;
@@ -162,6 +165,14 @@ exports.run = async function () {
     assert.ok(messages.some(m => m.type === 'reference' && m.data === 'timer'));
     assert.equal(doc.getText(), beforeReference);
     report('model tool can read a new Logic reference without editing code');
+    referenceId = 'vision-errors';
+    await api.assistant.send('查阅识别不到球和目标丢失的资料，只解释，不修改程序');
+    assert.ok(referenceIndex.includes('"id":"vision-guide"'));
+    assert.ok(referenceReply.includes('漏检、误识别与目标丢失'));
+    assert.ok(referenceReply.includes('https://education.vex.com/'));
+    assert.ok(messages.some(m => m.type === 'reference' && m.data === 'vision-errors'));
+    assert.equal(doc.getText(), beforeReference);
+    report('model tool reads the vision course reference and returns its source without editing code');
     streamMode = 'text';
     await api.assistant.send('流式解释边长，不修改程序');
     const received = api.assistant.conversationState().current.messages.at(-1);

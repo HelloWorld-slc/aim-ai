@@ -564,5 +564,240 @@
     ],
     "file": "robot-debug.md",
     "group": "guide"
+  },
+  {
+    "id": "vision-guide",
+    "title": "图像识别 · 课程与实战导航",
+    "keywords": [
+      "图像识别",
+      "视觉课程",
+      "识别资料",
+      "视觉入门",
+      "image recognition",
+      "computer vision"
+    ],
+    "file": "vision-guide.md",
+    "group": "guide",
+    "source": "https://education.vex.com/stemlabs/aim/aim-intro-course"
+  },
+  {
+    "id": "vision-observe",
+    "title": "图像识别 · 画面与数据查看",
+    "keywords": [
+      "查看识别",
+      "看画面",
+      "摄像头画面",
+      "仪表板",
+      "dashboard",
+      "utility",
+      "viewer",
+      "暂停画面",
+      "实时画面"
+    ],
+    "file": "vision-observe.md",
+    "group": "guide",
+    "source": "https://education.vex.com/stemlabs/aim/aim-intro-course/finding-and-transporting-cargo/three-ways-to-see-ai-vision",
+    "parent": "vision-guide"
+  },
+  {
+    "id": "vision-data",
+    "title": "图像识别 · 数据读取与多目标",
+    "keywords": [
+      "空元组",
+      "空结果",
+      "多目标",
+      "多个球",
+      "数据读取",
+      "目标选择",
+      "索引错误",
+      "indexerror",
+      "采样",
+      "目标跳变"
+    ],
+    "file": "vision-data.md",
+    "group": "guide",
+    "source": "https://api.vex.com/aim/home/python/AI_Vision.html",
+    "parent": "vision-guide"
+  },
+  {
+    "id": "vision-geometry",
+    "title": "图像识别 · 视野、距离与像素",
+    "keywords": [
+      "视野",
+      "视场",
+      "距离",
+      "像素",
+      "测距",
+      "坐标",
+      "看多远",
+      "多宽",
+      "fov",
+      "field of view",
+      "包围框"
+    ],
+    "file": "vision-geometry.md",
+    "group": "guide",
+    "source": "https://education.vex.com/stemlabs/aim/aim-intro-course/exploring-ai-vision/exploring-the-ai-vision-sensor",
+    "parent": "vision-guide"
+  },
+  {
+    "id": "vision-environment",
+    "title": "图像识别 · 光照、反光与地面",
+    "keywords": [
+      "光照",
+      "阴影",
+      "反光",
+      "光线",
+      "灯光影响",
+      "地面",
+      "背景",
+      "材质",
+      "环境影响",
+      "lighting",
+      "surface"
+    ],
+    "file": "vision-environment.md",
+    "group": "guide",
+    "source": "https://education.vex.com/stemlabs/aim/aim-intro-course/exploring-ai-vision/exploring-the-ai-vision-sensor",
+    "parent": "vision-guide"
+  },
+  {
+    "id": "vision-errors",
+    "title": "图像识别 · 漏检、误识别与丢失",
+    "keywords": [
+      "漏检",
+      "误检",
+      "误识别",
+      "认错",
+      "识别不到",
+      "识别不稳定",
+      "看不到球",
+      "丢失",
+      "遮挡",
+      "抖动",
+      "置信度",
+      "false positive"
+    ],
+    "file": "vision-errors.md",
+    "group": "guide",
+    "source": "https://education.vex.com/stemlabs/aim/aim-intro-course/exploring-ai-vision/exploring-the-ai-vision-sensor",
+    "parent": "vision-guide"
+  },
+  {
+    "id": "vision-apriltags",
+    "title": "图像识别 · AprilTag 与导航",
+    "keywords": [
+      "apriltag",
+      "apriltags",
+      "标记",
+      "标签",
+      "编号",
+      "球门标记",
+      "导航",
+      "tag37",
+      "二维码"
+    ],
+    "file": "vision-apriltags.md",
+    "group": "guide",
+    "source": "https://education.vex.com/stemlabs/aim/aim-intro-course/finding-and-transporting-cargo/lesson-2-moving-to-apriltags",
+    "parent": "vision-guide"
+  },
+  {
+    "id": "vision-colors",
+    "title": "图像识别 · 颜色签名与颜色码",
+    "keywords": [
+      "颜色识别",
+      "颜色签名",
+      "颜色码",
+      "色块",
+      "色相",
+      "饱和度",
+      "颜色配置",
+      "自定义颜色",
+      "color signature",
+      "color code"
+    ],
+    "file": "vision-colors.md",
+    "group": "guide",
+    "source": "https://kb.vex.com/hc/en-us/articles/35107943103636-Configuring-Color-Signatures-in-VEXcode-AIM",
+    "parent": "vision-guide"
+  },
+  {
+    "id": "vision-football",
+    "title": "图像识别 · 找球、持球与射门",
+    "keywords": [
+      "找球",
+      "寻球",
+      "对准球",
+      "追球",
+      "瞄准",
+      "球门",
+      "足球流程",
+      "两颗球",
+      "soccer",
+      "football"
+    ],
+    "file": "vision-football.md",
+    "group": "guide",
+    "source": "https://education.vex.com/stemlabs/aim/aim-intro-course/finding-and-transporting-cargo/unit-challenge",
+    "parent": "vision-guide"
+  },
+  {
+    "id": "vision-decisions",
+    "title": "图像识别 · 条件、循环与状态",
+    "keywords": [
+      "视觉决策",
+      "识别结果",
+      "条件判断",
+      "重复动作",
+      "状态机",
+      "重复踢球",
+      "旧数据",
+      "分支",
+      "重复识别"
+    ],
+    "file": "vision-decisions.md",
+    "group": "guide",
+    "source": "https://education.vex.com/stemlabs/aim/aim-intro-course/controlling-decisions/lesson-1-making-decisions-with-code",
+    "parent": "vision-guide"
+  },
+  {
+    "id": "vision-training",
+    "title": "图像识别 · 模型训练与边界",
+    "keywords": [
+      "训练",
+      "训练集",
+      "权重",
+      "新物体",
+      "模型能力",
+      "任意图片",
+      "自定义模型",
+      "training",
+      "dataset",
+      "weights"
+    ],
+    "file": "vision-training.md",
+    "group": "guide",
+    "source": "https://education.vex.com/stemlabs/aim/aim-intro-course/exploring-ai-vision/training-ai-vision-models",
+    "parent": "vision-guide"
+  },
+  {
+    "id": "vision-tests",
+    "title": "图像识别 · 实验记录与任务卡",
+    "keywords": [
+      "视觉测试",
+      "识别测试",
+      "识别率",
+      "准确率",
+      "实验记录",
+      "任务卡",
+      "验收",
+      "测试矩阵",
+      "task card"
+    ],
+    "file": "vision-tests.md",
+    "group": "guide",
+    "source": "https://education.vex.com/stemlabs/aim/aim-intro-course/exploring-ai-vision/exploring-the-ai-vision-sensor",
+    "parent": "vision-guide"
   }
 ]

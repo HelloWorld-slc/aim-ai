@@ -1,0 +1,257 @@
+{
+  "schemaVersion": 1,
+  "collectedOn": "2026-09-21",
+  "scope": "AIM Intro Course vision lessons and directly related official AIM documentation",
+  "note": "Source page text reviewed through web browsing. Chinese summaries and original project guidance are in the indexed Markdown topics. Videos and linked attachments were not downloaded or transcribed. Direct HTTP collection returned 403, so no raw HTML hashes or live attachment availability are claimed.",
+  "sources": [
+    {
+      "url": "https://api.vex.com/aim/home/python/AI_Vision.html",
+      "title": "AI Vision Python",
+      "publisher": "VEX Robotics",
+      "checkedOn": "2026-09-21",
+      "review": "page-text-via-web",
+      "topicIds": [
+        "vision-data",
+        "vision-apriltags"
+      ]
+    },
+    {
+      "url": "https://api.vex.com/aim/home/python/Macro.html",
+      "title": "Python Macro",
+      "publisher": "VEX Robotics",
+      "checkedOn": "2026-09-21",
+      "review": "page-text-via-web",
+      "topicIds": [
+        "vision-football"
+      ]
+    },
+    {
+      "url": "https://education.vex.com/stemlabs/aim/aim-intro-course",
+      "title": "AIM Intro Course",
+      "publisher": "VEX Robotics",
+      "checkedOn": "2026-09-21",
+      "review": "page-text-via-web",
+      "topicIds": [
+        "vision-guide"
+      ]
+    },
+    {
+      "url": "https://education.vex.com/stemlabs/aim/aim-intro-course/controlling-decisions/lesson-1-making-decisions-with-code",
+      "title": "视觉决策",
+      "publisher": "VEX Robotics",
+      "checkedOn": "2026-09-21",
+      "review": "page-text-via-web",
+      "topicIds": [
+        "vision-errors",
+        "vision-decisions",
+        "vision-tests"
+      ],
+      "materials": {
+        "landingPage": "https://education.vex.com/stemlabs/aim/aim-intro-course/controlling-decisions/lesson-1-making-decisions-with-code",
+        "formats": [
+          "google-doc",
+          "docx",
+          "pdf"
+        ],
+        "review": "links-listed-on-page-only",
+        "note": "Open the source page to select the task card. Attachment contents were not downloaded or reviewed."
+      }
+    },
+    {
+      "url": "https://education.vex.com/stemlabs/aim/aim-intro-course/controlling-decisions/lesson-2-repeating-behaviors",
+      "title": "Repeating Behaviors",
+      "publisher": "VEX Robotics",
+      "checkedOn": "2026-09-21",
+      "review": "page-text-via-web",
+      "topicIds": [
+        "vision-decisions"
+      ],
+      "materials": {
+        "landingPage": "https://education.vex.com/stemlabs/aim/aim-intro-course/controlling-decisions/lesson-2-repeating-behaviors",
+        "formats": [
+          "google-doc",
+          "docx",
+          "pdf"
+        ],
+        "review": "links-listed-on-page-only",
+        "note": "Open the source page to select the task card. Attachment contents were not downloaded or reviewed."
+      }
+    },
+    {
+      "url": "https://education.vex.com/stemlabs/aim/aim-intro-course/exploring-ai-vision/exploring-the-ai-vision-sensor",
+      "title": "Exploring the AI Vision Sensor",
+      "publisher": "VEX Robotics",
+      "checkedOn": "2026-09-21",
+      "review": "page-text-via-web",
+      "topicIds": [
+        "vision-geometry",
+        "vision-environment",
+        "vision-errors",
+        "vision-tests"
+      ],
+      "materials": {
+        "landingPage": "https://education.vex.com/stemlabs/aim/aim-intro-course/exploring-ai-vision/exploring-the-ai-vision-sensor",
+        "formats": [
+          "google-doc",
+          "docx",
+          "pdf"
+        ],
+        "review": "links-listed-on-page-only",
+        "note": "Open the source page to select the task card. Attachment contents were not downloaded or reviewed."
+      }
+    },
+    {
+      "url": "https://education.vex.com/stemlabs/aim/aim-intro-course/exploring-ai-vision/putting-it-all-together",
+      "title": "Putting It All Together",
+      "publisher": "VEX Robotics",
+      "checkedOn": "2026-09-21",
+      "review": "page-text-via-web",
+      "topicIds": [
+        "vision-decisions"
+      ],
+      "materials": {
+        "landingPage": "https://education.vex.com/stemlabs/aim/aim-intro-course/exploring-ai-vision/putting-it-all-together",
+        "formats": [
+          "google-doc",
+          "docx",
+          "pdf"
+        ],
+        "review": "links-listed-on-page-only",
+        "note": "Open the source page to select the task card. Attachment contents were not downloaded or reviewed."
+      }
+    },
+    {
+      "url": "https://education.vex.com/stemlabs/aim/aim-intro-course/exploring-ai-vision/training-ai-vision-models",
+      "title": "Training AI Vision Models",
+      "publisher": "VEX Robotics",
+      "checkedOn": "2026-09-21",
+      "review": "page-text-via-web",
+      "topicIds": [
+        "vision-training"
+      ]
+    },
+    {
+      "url": "https://education.vex.com/stemlabs/aim/aim-intro-course/finding-and-transporting-cargo/lesson-1-collecting-cargo",
+      "title": "Collecting Cargo",
+      "publisher": "VEX Robotics",
+      "checkedOn": "2026-09-21",
+      "review": "page-text-via-web",
+      "topicIds": [
+        "vision-football"
+      ],
+      "materials": {
+        "landingPage": "https://education.vex.com/stemlabs/aim/aim-intro-course/finding-and-transporting-cargo/lesson-1-collecting-cargo",
+        "formats": [
+          "google-doc",
+          "docx",
+          "pdf"
+        ],
+        "review": "links-listed-on-page-only",
+        "note": "Open the source page to select the task card. Attachment contents were not downloaded or reviewed."
+      }
+    },
+    {
+      "url": "https://education.vex.com/stemlabs/aim/aim-intro-course/finding-and-transporting-cargo/lesson-2-moving-to-apriltags",
+      "title": "Moving to AprilTags",
+      "publisher": "VEX Robotics",
+      "checkedOn": "2026-09-21",
+      "review": "page-text-via-web",
+      "topicIds": [
+        "vision-apriltags"
+      ],
+      "materials": {
+        "landingPage": "https://education.vex.com/stemlabs/aim/aim-intro-course/finding-and-transporting-cargo/lesson-2-moving-to-apriltags",
+        "formats": [
+          "google-doc",
+          "docx",
+          "pdf"
+        ],
+        "review": "links-listed-on-page-only",
+        "note": "Open the source page to select the task card. Attachment contents were not downloaded or reviewed."
+      }
+    },
+    {
+      "url": "https://education.vex.com/stemlabs/aim/aim-intro-course/finding-and-transporting-cargo/three-ways-to-see-ai-vision",
+      "title": "Three Ways to See AI Vision",
+      "publisher": "VEX Robotics",
+      "checkedOn": "2026-09-21",
+      "review": "page-text-via-web",
+      "topicIds": [
+        "vision-observe"
+      ]
+    },
+    {
+      "url": "https://education.vex.com/stemlabs/aim/aim-intro-course/finding-and-transporting-cargo/unit-challenge",
+      "title": "足球挑战",
+      "publisher": "VEX Robotics",
+      "checkedOn": "2026-09-21",
+      "review": "page-text-via-web",
+      "topicIds": [
+        "vision-errors",
+        "vision-football",
+        "vision-tests"
+      ],
+      "materials": {
+        "landingPage": "https://education.vex.com/stemlabs/aim/aim-intro-course/finding-and-transporting-cargo/unit-challenge",
+        "formats": [
+          "google-doc",
+          "docx",
+          "pdf"
+        ],
+        "review": "links-listed-on-page-only",
+        "note": "Open the source page to select the task card. Attachment contents were not downloaded or reviewed."
+      }
+    },
+    {
+      "url": "https://education.vex.com/stemlabs/aim/aim-intro-course/transport-cargo-with-the-ai-vision-sensor/explore-an-example-project",
+      "title": "Move to AprilTag 示例导读",
+      "publisher": "VEX Robotics",
+      "checkedOn": "2026-09-21",
+      "review": "page-text-via-web",
+      "topicIds": [
+        "vision-apriltags"
+      ]
+    },
+    {
+      "url": "https://kb.vex.com/hc/en-us/articles/35107943103636-Configuring-Color-Signatures-in-VEXcode-AIM",
+      "title": "Configuring Color Signatures",
+      "publisher": "VEX Robotics",
+      "checkedOn": "2026-09-21",
+      "review": "page-text-via-web",
+      "topicIds": [
+        "vision-colors"
+      ]
+    },
+    {
+      "url": "https://kb.vex.com/hc/en-us/articles/35120469450004-Configuring-Color-Codes-in-VEXcode-AIM",
+      "title": "Configuring Color Codes",
+      "publisher": "VEX Robotics",
+      "checkedOn": "2026-09-21",
+      "review": "page-text-via-web",
+      "topicIds": [
+        "vision-colors"
+      ]
+    },
+    {
+      "url": "https://kb.vex.com/hc/en-us/articles/35145536891028-Understanding-the-Data-in-the-AI-Vision-Utility",
+      "title": "Understanding the Data",
+      "publisher": "VEX Robotics",
+      "checkedOn": "2026-09-21",
+      "review": "page-text-via-web",
+      "topicIds": [
+        "vision-data",
+        "vision-geometry"
+      ]
+    },
+    {
+      "url": "https://kb.vex.com/hc/en-us/articles/36091751548436-Viewing-AI-Vision-Sensor-Data-in-the-AI-Vision-Dashboard",
+      "title": "AI Vision Dashboard",
+      "publisher": "VEX Robotics",
+      "checkedOn": "2026-09-21",
+      "review": "page-text-via-web",
+      "topicIds": [
+        "vision-observe"
+      ]
+    }
+  ]
+}

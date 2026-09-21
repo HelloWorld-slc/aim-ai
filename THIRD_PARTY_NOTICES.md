@@ -20,6 +20,8 @@
 
 官方参考入口：
 
+0.5.1 图像识别专题依据 VEX Robotics 的 [AIM Intro Course](https://education.vex.com/stemlabs/aim/aim-intro-course) 及相关官方 API / VEX Library 页面整理；详细来源、查阅日期和任务卡入口见 `resources/knowledge/vision-sources.json`。内容为简短中文摘要与明确标识的本项目建议，不捆绑官方视频、插图、任务卡或训练数据，也不将它们重新声明为 MIT 内容。原始教育材料的权利与使用条件仍归原站点。
+
 - https://api.vex.com/aim/home/
 - https://api.vex.com/aim/home/python/index.html
 - https://docs.micropython.org/en/v1.22.0/library/index.html
